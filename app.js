@@ -1,9 +1,15 @@
 'use strict'
 
+const productRouter = require('./app/product/router');
+
 const express = require('express');
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// * router api
+app.use('/api', productRouter);
 
 // * tangkap 404 dan teruskan ke penangan kesalahan 
 app.use(function(req, res, next) {
