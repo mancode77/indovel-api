@@ -9,5 +9,4 @@ const multer = require('multer');
 
 router.post('/products', multer({dest: os.tmpdir()}).single('url_gambar'), productController.store);
 
-
 module.exports = router;

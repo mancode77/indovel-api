@@ -23,8 +23,6 @@ connection.connect(function(err) {
     server.on('listening', onListening);
 });
 
-
-
 function normalizePort(val) {
     const port = parseInt(val, 10);
 
