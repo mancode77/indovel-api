@@ -4,9 +4,13 @@ function Query() {
     this.sqlInsert = function() {
         return `
             INSERT INTO produk
-            (nama, deskripsi, harga)
+            (nama, deskripsi, harga, url_gambar)
             VALUES ?
         `;
+    };
+
+    this.sqlSelect = function(query) {
+        return query;
     }
 }
 
