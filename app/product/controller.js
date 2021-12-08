@@ -8,12 +8,12 @@ const config = require('./../config');
 
 async function store(req, res, next) {
     try{
-        // * tangkap request dari user
+        // * user request data 
         let payload = req.body;
         // * tampung data payload
         const dataPayload = [];
         
-        // * ambil attribut dari payload
+        // * fetch attributes from payload 
         for(let key in payload) {
             dataPayload.push(payload[key]);
         }
@@ -21,15 +21,15 @@ async function store(req, res, next) {
          // * instance object query sql
         let query = new Query();
 
-          // * mulai transaction
+          // * start transaction
         await connection.beginTransaction(function(err) {
             if(err) {
-                console.error(`Gagal melakukan transaction: ${err}`);
+                console.error(`Failed to make a transaction : ${err}`);
                 return;
             }
         });
 
-        // * cek apakah melakukan request file
+        // * check whether to make a file request 
         if(req.file) {
             let tmp_path = req.file.path;
             let originalExt =
@@ -42,28 +42,28 @@ async function store(req, res, next) {
                 `public/upload/${filename}`
             );
 
-            // * baca file yang masih di lokasi sementara
+            // * read files that are still in a temporary location 
             let src = fs.createReadStream(tmp_path);
-            // *  pindahkan file ke lokasi permanen
+            // *  move files to a permanent location 
             let dest = fs.createWriteStream(target_path);
-            // *  mulai pindahkan file dari `src` ke `dest`
+            // *  start moving files from `src` to `dest` 
             src.pipe(dest);
 
             src.on("end", async () => {
                 let product = [...dataPayload, filename];
-                //! buat function untuk query, karena dipakai berulang
+                //! make a function for the query, because it is used over and over 
                 await connection.query(
                     query.sqlInsert(), 
                     [[product]], 
                     async function(err, rows) {
-                        // * tangani gagal query
+                        // * handle failed query 
                         if(err) {
                             // * rollback
                             await connection.rollback(function(err) {
-                                console.error(`Gagal melakukan query: ${err}`);
+                                console.error(`Query failed : ${err}`);
                             });
 
-                            // //! penanganan error ( sementara )
+                            //! error handling (temporary) 
                             return res.json({
                                 error: 1,
                                 message: err.sqlMessage,
@@ -71,15 +71,15 @@ async function store(req, res, next) {
                         }
                 });
 
-                // ! select data untuk mengetahui data yang di inputkan user ( sementara )
+                // ! select data to find out the data entered by the user (temporarily) 
                 await connection.query(
-                    query.sqlSelect("SELECT * FROM produk ORDER BY id DESC LIMIT 1"),  
+                    query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
                     async function(err, rows) {
-                        // * tangani gagal query
+                        // * handle failed query 
                         if(err) {
                             // * rollback
                             await connection.rollback(function(err) {
-                                console.error(`Gagal melakukan query: ${err}`);
+                                console.error(`Query failed: ${err}`);
                             });
                         } 
                         return res.json(rows);
@@ -95,14 +95,14 @@ async function store(req, res, next) {
                 query.sqlInsert(), 
                 [[dataPayload]], 
                 async function(err, rows) {
-                    // * tangani gagal query
+                    // * handle failed query 
                     if(err) {
                         // * rollback
                         await connection.rollback(function(err) {
-                            console.error(`Gagal melakukan query: ${err}`);
+                            console.error(`Query failed: ${err}`);
                         });
 
-                        // //! penanganan error ( sementara )
+                        //! error handling (temporary) 
                         return res.json({
                             error: 1,
                             message: err.sqlMessage,
@@ -110,15 +110,15 @@ async function store(req, res, next) {
                     }
             });
 
-            // ! select data untuk mengetahui data yang di inputkan user ( sementara )
+            // ! select data to find out the data entered by the user (temporarily) 
             await connection.query(
-                query.sqlSelect("SELECT * FROM produk ORDER BY id DESC LIMIT 1"),  
+                query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
                 async function(err, rows) {
                     // * tangani gagal query
                     if(err) {
                         // * rollback
                         await connection.rollback(function(err) {
-                            console.error(`Gagal melakukan query: ${err}`);
+                            console.error(`Query failed: ${err}`);
                         });
                     } 
                     return res.json(rows);
@@ -128,16 +128,16 @@ async function store(req, res, next) {
         // * commit
         await connection.commit(function(err) {
             if(err) {
-                console.error(`Gagal melakuka commit: ${err}`);
+                console.error(`Failed to commit : ${err}`);
                 return;
             }
         });
     }catch (err) {
         /**
-        * ! Penangan belum bisa digunakan
-        * ! Membutuhan decorator!!...
+        * ! The handler can't be used
+        * ! Need a decorator!!... 
          */
-        // * cek tipe error
+        // * check error type 
         if(err && err.name === 'ValidationError'){
             return res.json({
                 error: 1,
@@ -146,7 +146,7 @@ async function store(req, res, next) {
             });
         }
 
-        // * penanganan error oleh express
+        // * error handling by express 
         next(err);
     }
 }

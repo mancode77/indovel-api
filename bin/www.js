@@ -17,7 +17,7 @@ connection.connect(function(err) {
         return;
     }
 
-    // * Koneksi berhasil 
+    // * Connection successful 
     server.listen(port);
     server.on('error', onError); 
     server.on('listening', onListening);
@@ -27,12 +27,12 @@ function normalizePort(val) {
     const port = parseInt(val, 10);
 
     if (isNaN(port)) {
-    // * nama pipe
+    // * pipe name
         return val;
     }
 
     if (port >= 0) {
-    // *  nomor port
+    // *  port number
         return port;
     }
 
@@ -48,7 +48,7 @@ function onError(error) {
         ? 'Pipe ' + port
         : 'Port ' + port;
 
-  // * menangani kesalahan mendengarkan spesifik dengan pesan ramah 
+  // * handle specific listening errors with friendly messages 
     switch (error.code) {
         case 'EACCES':
             console.error(bind + ' requires elevated privileges');
@@ -63,7 +63,7 @@ function onError(error) {
     }
 }
 
-// * Acara pendengar untuk acara HTTP Server "mendengarkan". 
+// * Event listener for HTTP Server "listen" event. 
 function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string'

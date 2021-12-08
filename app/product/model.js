@@ -3,8 +3,8 @@
 function Query() {
     this.sqlInsert = function() {
         return `
-            INSERT INTO produk
-            (nama, deskripsi, harga, url_gambar)
+            INSERT INTO products
+            (name, description, price, image_url)
             VALUES ?
         `;
     };
