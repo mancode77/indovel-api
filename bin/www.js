@@ -3,6 +3,7 @@
 const http = require('http');
 const app = require('./../app');
 const { connection } = require('./../database');
+const debug = require('debug')('indovel:server');
 
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -19,7 +20,7 @@ connection.connect(function(err) {
     // * Koneksi berhasil 
     server.listen(port);
     server.on('error', onError); 
-    console.log(`Server running at http://127.0.0.1:${port}`);   
+    server.on('listening', onListening);
 });
 
 
@@ -28,12 +29,12 @@ function normalizePort(val) {
     const port = parseInt(val, 10);
 
     if (isNaN(port)) {
-    // named pipe
+    // * nama pipe
         return val;
     }
 
     if (port >= 0) {
-    // port number
+    // *  nomor port
         return port;
     }
 
@@ -49,7 +50,7 @@ function onError(error) {
         ? 'Pipe ' + port
         : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
+  // * menangani kesalahan mendengarkan spesifik dengan pesan ramah 
     switch (error.code) {
         case 'EACCES':
             console.error(bind + ' requires elevated privileges');
@@ -62,4 +63,13 @@ function onError(error) {
         default:
             throw error;
     }
+}
+
+// * Acara pendengar untuk acara HTTP Server "mendengarkan". 
+function onListening() {
+    const addr = server.address();
+    const bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
 }
