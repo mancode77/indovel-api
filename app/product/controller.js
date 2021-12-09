@@ -54,8 +54,8 @@ async function store(req, res, next) {
 
                 /**
                  * ! check connection query 
-                 * ! jika true, return data
-                 * ! jik false, return error
+                 * ! if true, return data
+                 * ! if false, return error
                  */
 
                 //! make a function for the query, because it is used over and over 
