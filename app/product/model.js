@@ -12,6 +12,10 @@ function Query() {
     this.sqlSelect = function(query) {
         return query;
     }
+
+    this.sqlUpdate = function(query) {
+        return query;
+    }
 }
 
 module.exports = { Query };
