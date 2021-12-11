@@ -16,6 +16,10 @@ function Query() {
     this.sqlUpdate = function(query) {
         return query;
     }
+
+    this.sqlDelete = function(query) {
+        return query;
+    }
 }
 
 module.exports = { Query };

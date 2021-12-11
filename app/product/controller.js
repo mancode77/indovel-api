@@ -98,38 +98,9 @@ async function store(req, res, next) {
                 next(err);
             });
         } else {
-            // * insert data 
-            await connection.query(
-                query.sqlInsert(), 
-                [[dataPayload]], 
-                async function(err, rows) {
-                    // * handle failed query 
-                    if(err) {
-                        // * rollback
-                        await connection.rollback(function(err) {
-                            console.error(`Query failed: ${err}`);
-                        });
-
-                        //! error handling (temporary) 
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
-                        });
-                    }
-            });
-
-            // ! select data to find out the data entered by the user (temporarily) 
-            await connection.query(
-                query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
-                async function(err, rows) {
-                    // * tangani gagal query
-                    if(err) {
-                        // * rollback
-                        await connection.rollback(function(err) {
-                            console.error(`Query failed: ${err}`);
-                        });
-                    } 
-                    return res.json(rows);
+           return res.json({
+                error: 1,
+                message: 'Harus menggunakan gambar'
             });
         }
 
@@ -172,7 +143,7 @@ async function index(req, res, next) {
             }
         });
 
-         // ! select data to find out the data entered by the user (temporarily) 
+        // ! select data to find out the data entered by the user (temporarily) 
         await connection.query(
             //! Binding limit and skip
             query.sqlSelect(`SELECT * FROM products ORDER BY id DESC LIMIT ${Number(skip)}, ${Number(limit)}`),  
@@ -201,7 +172,6 @@ async function index(req, res, next) {
     }
 }
 
-// ! not tested yet 
 async function update(req, res, next) {
     try{
         // * user request data 
@@ -209,15 +179,12 @@ async function update(req, res, next) {
         // * tampung data payload
         const dataPayload = [];
 
-        // * Capture user id 
-        dataPayload.push(req.params.id);
-        
         // * fetch attributes from payload 
         for(let key in payload) {
             dataPayload.push(payload[key]);
         }
 
-          // * start transaction
+        // * start transaction
         await connection.beginTransaction(function(err) {
             if(err) {
                 console.error(`Failed to make a transaction : ${err}`);
@@ -248,52 +215,66 @@ async function update(req, res, next) {
             src.on("end", async () => {
                 let product = [...dataPayload, filename];
 
-                // * get the absolute path to the image of the product to be updated 
-                let currentImage = `${config.rootPath}/public/upload/${product[4]}`;
-
-                // * check if the absolute path does exist in the file system
-                if(fs.existsSync(currentImage)){
-                    // * if there is delete it from the file system 
-                    fs.unlinkSync(currentImage)
-                }
-
-                /**
-                 * ! cek conection query
-                 * ! if true, return data
-                 * ! if false, return error
-                 */
-
-                //! make a function for the query, because it is used over and over 
-
-                // * update data
-
-                // ! justification on search id 
                 await connection.query(
-                    query.sqlUpdate(`
-                        UPDATE products SET 
-                        ? 
-                        WHERE id = ?
-                    `), 
-                    [[product]], 
-                    async function(err, rows) {
-                        // * handle failed query 
-                        if(err) {
-                            // * rollback
-                            await connection.rollback(function(err) {
-                                console.error(`Query failed : ${err}`);
-                            });
+                        query.sqlSelect("SELECT * FROM products WHERE id = ? "),
+                        Number(req.params.id), 
+                        async function(err, rows) {
+                            // * absoulte path
+                            let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
 
-                            //! error handling (temporary) 
-                            return res.json({
-                                error: 1,
-                                message: err.sqlMessage,
-                            });
-                        }
-                });
+                            // * cek absolute path
+                            if(fs.existsSync(currentImage)) {
+                                fs.unlinkSync(currentImage);
+                            }   
+
+                            // * handle failed query 
+                            if(err) {
+                                // * rollback
+                                await connection.rollback(function(err) {
+                                    console.error(`Query failed: ${err}`);
+                                });
+                            } 
+                    });
+
+
+                /**    
+                * ! check connection query 
+                * ! if true, return data
+                * ! if false, return error
+                */
+
+                // ! make a function for the query, because it is used over and over 
+                // * update data
+                await connection.query(
+                        query.sqlUpdate(`
+                            UPDATE products SET 
+                            name = ?, 
+                            description = ?, 
+                            price = ?, 
+                            image_url = ?
+                            WHERE id = ${Number(req.params.id)}
+                        `), 
+                        product,
+                        async function(err) {
+                            // * handle failed query 
+                            if(err) {
+                                // * rollback
+                                await connection.rollback(function(err) {
+                                    console.error(`Query failed : ${err}`);
+                                });
+
+                                //! error handling (temporary) 
+                                return res.json({
+                                    error: 1,
+                                    message: err.sqlMessage,
+                                });
+                            }
+                        });
+         
 
                 // ! select data to find out the data entered by the user (temporarily) 
                 await connection.query(
-                    query.sqlSelect("SELECT * FROM products ORDER BY update_at DESC LIMIT 1"),  
+                    query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
@@ -310,44 +291,9 @@ async function update(req, res, next) {
                 next(err);
             });
         } else {
-            // * update data
-
-            // ! justification on search id 
-            await connection.query(
-                query.sqlUpdate(`
-                    UPDATE products SET
-                    ?
-                    WHERE id = ?
-                `), 
-                [[dataPayload]], 
-                async function(err, rows) {
-                    // * handle failed query 
-                    if(err) {
-                        // * rollback
-                        await connection.rollback(function(err) {
-                            console.error(`Query failed: ${err}`);
-                        });
-
-                        //! error handling (temporary) 
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
-                        });
-                    }
-            });
-
-            // ! select data to find out the data entered by the user (temporarily) 
-            await connection.query(
-                query.sqlSelect("SELECT * FROM products ORDER BY update_at DESC LIMIT 1"),  
-                async function(err, rows) {
-                    // * tangani gagal query
-                    if(err) {
-                        // * rollback
-                        await connection.rollback(function(err) {
-                            console.error(`Query failed: ${err}`);
-                        });
-                    } 
-                    return res.json(rows);
+           return res.json({
+                error: 1,
+                message: 'Harus menggunakan gambar'
             });
         }
 
@@ -377,4 +323,73 @@ async function update(req, res, next) {
     }
 }
 
-module.exports = { store, index, update };
+async function destroy(req, res, next) {
+     try {
+
+        // * start transaction
+        await connection.beginTransaction(function(err) {
+            if(err) {
+                console.error(`Failed to make a transaction : ${err}`);
+                return;
+            }
+        });
+
+        // ! select data to find out the data entered by the user (temporarily) 
+        await connection.query(
+            //! Binding limit and skip
+            query.sqlSelect(`SELECT * FROM products WHERE id = ?`),
+            Number(req.params.id),  
+            async function(err, rows) {
+                // * handle failed query 
+                if(err) {
+                    // * rollback
+                    await connection.rollback(function(err) {
+                        console.error(`Query failed: ${err}`);
+                    });
+                } 
+                
+               if(rows.length > 0) {
+
+                    let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
+
+                    // * cek absolute path
+                    if(fs.existsSync(currentImage)) {
+                        fs.unlinkSync(currentImage);
+                    }   
+
+                    await connection.query(
+                        query.sqlDelete(`DELETE FROM products WHERE id = ?`), 
+                        rows[0].id, 
+                        async function(){
+                            if(err) {
+                                // * rollback
+                                await connection.rollback(function(err) {
+                                    console.error(`Query failed: ${err}`);
+                                });
+                            } 
+                        })
+                    
+
+                    // * absoulte path
+                   
+
+               }
+
+               return res.json(rows);
+        });
+
+         // * commit
+        await connection.commit(function(err) {
+            if(err) {
+                console.error(`Failed to commit : ${err}`);
+                return;
+            }
+        });
+    }catch(err) {
+         // * error handling by express 
+        next(err);
+    }
+}
+
+
+module.exports = { store, index, update, destroy};
