@@ -23,11 +23,11 @@ async function store(req, res, next) {
 
           // * start transaction
         await connection.beginTransaction(function(err) {
-            if(err) {
-                console.error(`Failed to make a transaction : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to make a transaction : ${err}`);
+                    return;
+                }
+            });
 
         // * check whether to make a file request 
         if(req.file) {
@@ -77,7 +77,7 @@ async function store(req, res, next) {
                                 message: err.sqlMessage,
                             });
                         }
-                });
+                    });
 
                 // ! select data to find out the data entered by the user (temporarily) 
                 await connection.query(
@@ -91,7 +91,7 @@ async function store(req, res, next) {
                             });
                         } 
                         return res.json(rows);
-                });
+                    });
             });
 
             src.on("error", async (err) => {
@@ -106,11 +106,11 @@ async function store(req, res, next) {
 
         // * commit
         await connection.commit(function(err) {
-            if(err) {
-                console.error(`Failed to commit : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to commit : ${err}`);
+                    return;
+                }
+            });
     }catch (err) {
         /**
         * ! The handler can't be used
@@ -137,11 +137,11 @@ async function index(req, res, next) {
 
           // * start transaction
         await connection.beginTransaction(function(err) {
-            if(err) {
-                console.error(`Failed to make a transaction : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to make a transaction : ${err}`);
+                    return;
+                }
+            });
 
         // ! select data to find out the data entered by the user (temporarily) 
         await connection.query(
@@ -157,15 +157,15 @@ async function index(req, res, next) {
                 } 
                 
                 return res.json(rows);
-        });
+            });
 
          // * commit
         await connection.commit(function(err) {
-            if(err) {
-                console.error(`Failed to commit : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to commit : ${err}`);
+                    return;
+                }
+            });
     }catch(err) {
          // * error handling by express 
         next(err);
@@ -186,11 +186,11 @@ async function update(req, res, next) {
 
         // * start transaction
         await connection.beginTransaction(function(err) {
-            if(err) {
-                console.error(`Failed to make a transaction : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to make a transaction : ${err}`);
+                    return;
+                }
+            });
 
         // * check whether to make a file request 
         if(req.file) {
@@ -236,7 +236,6 @@ async function update(req, res, next) {
                             } 
                     });
 
-
                 /**    
                 * ! check connection query 
                 * ! if true, return data
@@ -271,7 +270,6 @@ async function update(req, res, next) {
                             }
                         });
          
-
                 // ! select data to find out the data entered by the user (temporarily) 
                 await connection.query(
                     query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
@@ -284,7 +282,7 @@ async function update(req, res, next) {
                             });
                         } 
                         return res.json(rows);
-                });
+                    });
             });
 
             src.on("error", async (err) => {
@@ -299,11 +297,11 @@ async function update(req, res, next) {
 
         // * commit
         await connection.commit(function(err) {
-            if(err) {
-                console.error(`Failed to commit : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to commit : ${err}`);
+                    return;
+                }
+            });
     }catch (err) {
         /**
         * ! The handler can't be used
@@ -325,14 +323,13 @@ async function update(req, res, next) {
 
 async function destroy(req, res, next) {
      try {
-
         // * start transaction
         await connection.beginTransaction(function(err) {
-            if(err) {
-                console.error(`Failed to make a transaction : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to make a transaction : ${err}`);
+                    return;
+                }
+            });
 
         // ! select data to find out the data entered by the user (temporarily) 
         await connection.query(
@@ -348,8 +345,8 @@ async function destroy(req, res, next) {
                     });
                 } 
                 
-               if(rows.length > 0) {
-
+                if(rows.length > 0) {
+                    // * absoulte path
                     let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
 
                     // * cek absolute path
@@ -367,24 +364,19 @@ async function destroy(req, res, next) {
                                     console.error(`Query failed: ${err}`);
                                 });
                             } 
-                        })
-                    
+                        });
+                }
 
-                    // * absoulte path
-                   
-
-               }
-
-               return res.json(rows);
-        });
+                return res.json(rows);
+            });
 
          // * commit
         await connection.commit(function(err) {
-            if(err) {
-                console.error(`Failed to commit : ${err}`);
-                return;
-            }
-        });
+                if(err) {
+                    console.error(`Failed to commit : ${err}`);
+                    return;
+                }
+            });
     }catch(err) {
          // * error handling by express 
         next(err);
