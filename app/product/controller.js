@@ -21,13 +21,9 @@ async function store(req, res, next) {
             dataPayload.push(payload[key]);
         }
 
-          // * start transaction
-        await connection.beginTransaction(function(err) {
-                if(err) {
-                    console.error(`Failed to make a transaction : ${err}`);
-                    return;
-                }
-            });
+        // * start transaction
+        // ! UJI COBA
+        await query.transaction();
 
         // * check whether to make a file request 
         if(req.file) {
@@ -60,16 +56,19 @@ async function store(req, res, next) {
 
                 //! make a function for the query, because it is used over and over 
                 //  * insert data
-                await connection.query(
-                    query.sqlInsert(), 
+                // ! UJI COBA
+                await query.connectionQuery(
+                    query.sqlQuery(`
+                        INSERT INTO products
+                        (name, description, price, image_url)
+                        VALUES ?
+                    `),
                     [[product]], 
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
                             // * rollback
-                            await connection.rollback(function(err) {
-                                console.error(`Query failed : ${err}`);
-                            });
+                            query.rollback();
 
                             //! error handling (temporary) 
                             return res.json({
@@ -77,21 +76,21 @@ async function store(req, res, next) {
                                 message: err.sqlMessage,
                             });
                         }
-                    });
+                });
 
+               
                 // ! select data to find out the data entered by the user (temporarily) 
-                await connection.query(
-                    query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
-                    async function(err, rows) {
+                // ! UJI COBA
+               await query.connectionQuery(
+                    query.sqlQuery("SELECT * FROM products ORDER BY id DESC LIMIT 1"), 
+                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
                             // * rollback
-                            await connection.rollback(function(err) {
-                                console.error(`Query failed: ${err}`);
-                            });
+                            query.rollback();
                         } 
                         return res.json(rows);
-                    });
+                });
             });
 
             src.on("error", async (err) => {
@@ -105,12 +104,8 @@ async function store(req, res, next) {
         }
 
         // * commit
-        await connection.commit(function(err) {
-                if(err) {
-                    console.error(`Failed to commit : ${err}`);
-                    return;
-                }
-            });
+        // ! UJI COBA
+        await query.commit();
     }catch (err) {
         /**
         * ! The handler can't be used
@@ -135,37 +130,25 @@ async function index(req, res, next) {
 
         let { limit = 10, skip = 0 } = req.query;
 
-          // * start transaction
-        await connection.beginTransaction(function(err) {
-                if(err) {
-                    console.error(`Failed to make a transaction : ${err}`);
-                    return;
-                }
-            });
+        // * start transaction
+        await query.transaction();
 
         // ! select data to find out the data entered by the user (temporarily) 
-        await connection.query(
+        await query.connectionQuery(
             //! Binding limit and skip
-            query.sqlSelect(`SELECT * FROM products ORDER BY id DESC LIMIT ${Number(skip)}, ${Number(limit)}`),  
+            query.sqlQuery(`SELECT * FROM products ORDER BY id DESC LIMIT ${Number(skip)}, ${Number(limit)}`),
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
                     // * rollback
-                    await connection.rollback(function(err) {
-                        console.error(`Query failed: ${err}`);
-                    });
+                    query.rollback();
                 } 
                 
                 return res.json(rows);
-            });
-
-         // * commit
-        await connection.commit(function(err) {
-                if(err) {
-                    console.error(`Failed to commit : ${err}`);
-                    return;
-                }
-            });
+        });
+        
+        // * commit
+        await query.commit();
     }catch(err) {
          // * error handling by express 
         next(err);
@@ -185,12 +168,7 @@ async function update(req, res, next) {
         }
 
         // * start transaction
-        await connection.beginTransaction(function(err) {
-                if(err) {
-                    console.error(`Failed to make a transaction : ${err}`);
-                    return;
-                }
-            });
+        await query.transaction();
 
         // * check whether to make a file request 
         if(req.file) {
@@ -215,10 +193,10 @@ async function update(req, res, next) {
             src.on("end", async () => {
                 let product = [...dataPayload, filename];
 
-                await connection.query(
-                        query.sqlSelect("SELECT * FROM products WHERE id = ? "),
-                        Number(req.params.id), 
-                        async function(err, rows) {
+                await query.connectionQuery(
+                     query.sqlQuery("SELECT * FROM products WHERE id = ? "),
+                     Number(req.params.id),
+                     async function(err, rows) {
                             // * absoulte path
                             let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
 
@@ -230,12 +208,10 @@ async function update(req, res, next) {
                             // * handle failed query 
                             if(err) {
                                 // * rollback
-                                await connection.rollback(function(err) {
-                                    console.error(`Query failed: ${err}`);
-                                });
+                                query.rollback();
                             } 
-                    });
-
+                });
+            
                 /**    
                 * ! check connection query 
                 * ! if true, return data
@@ -244,8 +220,8 @@ async function update(req, res, next) {
 
                 // ! make a function for the query, because it is used over and over 
                 // * update data
-                await connection.query(
-                        query.sqlUpdate(`
+                await query.connectionQuery(
+                    query.sqlQuery(`
                             UPDATE products SET 
                             name = ?, 
                             description = ?, 
@@ -258,9 +234,7 @@ async function update(req, res, next) {
                             // * handle failed query 
                             if(err) {
                                 // * rollback
-                                await connection.rollback(function(err) {
-                                    console.error(`Query failed : ${err}`);
-                                });
+                                query.rollback();
 
                                 //! error handling (temporary) 
                                 return res.json({
@@ -268,22 +242,21 @@ async function update(req, res, next) {
                                     message: err.sqlMessage,
                                 });
                             }
-                        });
-         
-                // ! select data to find out the data entered by the user (temporarily) 
-                await connection.query(
-                    query.sqlSelect("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
+                });
+            
+                // ! select data to find out the data entered by the user (temporarily)
+
+                await query.connectionQuery(
+                    query.sqlQuery("SELECT * FROM products ORDER BY id DESC LIMIT 1"),  
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
-                            // * rollback
-                            await connection.rollback(function(err) {
-                                console.error(`Query failed: ${err}`);
-                            });
+                           // * rollback
+                           query.rollback();
                         } 
                         return res.json(rows);
                     });
-            });
+                });
 
             src.on("error", async (err) => {
                 next(err);
@@ -296,12 +269,7 @@ async function update(req, res, next) {
         }
 
         // * commit
-        await connection.commit(function(err) {
-                if(err) {
-                    console.error(`Failed to commit : ${err}`);
-                    return;
-                }
-            });
+        await query.commit();
     }catch (err) {
         /**
         * ! The handler can't be used
@@ -324,25 +292,18 @@ async function update(req, res, next) {
 async function destroy(req, res, next) {
      try {
         // * start transaction
-        await connection.beginTransaction(function(err) {
-                if(err) {
-                    console.error(`Failed to make a transaction : ${err}`);
-                    return;
-                }
-            });
+        await query.transaction();
 
         // ! select data to find out the data entered by the user (temporarily) 
-        await connection.query(
+        await query.connectionQuery(
             //! Binding limit and skip
-            query.sqlSelect(`SELECT * FROM products WHERE id = ?`),
+            query.sqlQuery(`SELECT * FROM products WHERE id = ?`),
             Number(req.params.id),  
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
                     // * rollback
-                    await connection.rollback(function(err) {
-                        console.error(`Query failed: ${err}`);
-                    });
+                    query.rollback();
                 } 
                 
                 if(rows.length > 0) {
@@ -355,14 +316,12 @@ async function destroy(req, res, next) {
                     }   
 
                     await connection.query(
-                        query.sqlDelete(`DELETE FROM products WHERE id = ?`), 
+                        query.sqlQuery(`DELETE FROM products WHERE id = ?`), 
                         rows[0].id, 
                         async function(){
                             if(err) {
-                                // * rollback
-                                await connection.rollback(function(err) {
-                                    console.error(`Query failed: ${err}`);
-                                });
+                               // * rollback
+                               query.rollback();
                             } 
                         });
                 }
@@ -370,13 +329,8 @@ async function destroy(req, res, next) {
                 return res.json(rows);
             });
 
-         // * commit
-        await connection.commit(function(err) {
-                if(err) {
-                    console.error(`Failed to commit : ${err}`);
-                    return;
-                }
-            });
+        // * commit
+        await query.commit();
     }catch(err) {
          // * error handling by express 
         next(err);
