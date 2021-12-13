@@ -2,7 +2,7 @@
 
 const http = require('http');
 const app = require('./../app');
-const { connection } = require('./../database');
+const { dbConnection } = require('./../database');
 const debug = require('debug')('indovel:server');
 
 const port = normalizePort(process.env.PORT || '3000');
@@ -10,7 +10,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-connection.connect(function(err) {
+dbConnection.connect(function(err) {
     // * Tangkap error koneksi DB
     if (err) {
         console.error('error connecting: ' + err.stack);
