@@ -21,7 +21,6 @@ async function store(req, res, next) {
         }
 
         // * start transaction
-        // ! UJI COBA
         await queries.transaction();
 
         // * check whether to make a file request 
@@ -55,7 +54,6 @@ async function store(req, res, next) {
 
                 //! make a function for the query, because it is used over and over 
                 //  * insert data
-                // ! UJI COBA
                 await queries.connectionQuery(
                     `
                         INSERT INTO products
@@ -79,7 +77,6 @@ async function store(req, res, next) {
 
                
                 // ! select data to find out the data entered by the user (temporarily) 
-                // ! UJI COBA
                await queries.connectionQuery(
                    "SELECT * FROM products ORDER BY id DESC LIMIT 1", 
                      async function(err, rows) {
@@ -103,7 +100,6 @@ async function store(req, res, next) {
         }
 
         // * commit
-        // ! UJI COBA
         await queries.commit();
     }catch (err) {
         /**
@@ -134,7 +130,6 @@ async function index(req, res, next) {
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
-            //! Binding limit and skip
             `SELECT * FROM products ORDER BY id DESC LIMIT ?, ?`,
             [Number(skip), Number(limit)],
             async function(err, rows) {
@@ -159,7 +154,7 @@ async function update(req, res, next) {
     try{
         // * user request data 
         let payload = req.body;
-        // * tampung data payload
+        // * accommodate data payload
         const dataPayload = [];
 
         // * fetch attributes from payload 
@@ -193,7 +188,7 @@ async function update(req, res, next) {
             src.on("end", async () => {
                 let product = [...dataPayload, filename];
 
-                //push id in last element array product
+                ////push id on last element of product array
                 product.push(Number(req.params.id));
 
                 await queries.connectionQuery(
@@ -248,7 +243,6 @@ async function update(req, res, next) {
                 });
             
                 // ! select data to find out the data entered by the user (temporarily)
-
                 await queries.connectionQuery(
                     "SELECT * FROM products ORDER BY id DESC LIMIT 1",  
                     async function(err, rows) {
@@ -313,7 +307,7 @@ async function destroy(req, res, next) {
                     // * absoulte path
                     let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
 
-                    // * cek absolute path
+                    // * check absolute path
                     if(fs.existsSync(currentImage)) {
                         fs.unlinkSync(currentImage);
                     }   

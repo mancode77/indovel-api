@@ -8,7 +8,6 @@ const { dbConnection } = require('./../../database');
 function Queries() {
 	this.transaction = async function() {
 		 // * start transaction
-		 // ! UJI COBA
         return await dbConnection.beginTransaction(function(err) {
                 if(err) {
                     console.error(`Failed to make a transaction : ${err}`);
@@ -31,7 +30,6 @@ function Queries() {
 
     this.rollback = async function() {
     	// * rollback
-    	// ! UJI COBA
     	return await dbConnection.rollback(function(err) {
                     	console.error(`Query failed : ${err}`);
                     });
@@ -39,7 +37,6 @@ function Queries() {
 
     this.commit = async function() {	
        // * commit
-       // ! UJI COBA
        return await dbConnection.commit(function(err) {
                 if(err) {
                     console.error(`Failed to commit : ${err}`);
