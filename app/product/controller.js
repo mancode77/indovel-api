@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Queries } = require('./model');
+const { Queries } = require('./module/queries');
 const config = require('./../config');
 
 // * instance object query sql
