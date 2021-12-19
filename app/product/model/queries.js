@@ -1,6 +1,6 @@
 'use strict'
 
-const { dbConnection } = require('./../../database');
+const { dbConnection } = require('./../../../database');
 
 // ! ideally use decorative...!!!
 

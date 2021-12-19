@@ -2,7 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Queries } = require('./module/queries');
+const { Queries } = require('./model/queries');
+const { validation } = require('./model/schema');
 const config = require('./../config');
 
 // * instance object query sql
@@ -46,21 +47,19 @@ async function store(req, res, next) {
             src.on("end", async () => {
                 let product = [...dataPayload, filename];
 
-                /**
-                 * ! check connection query 
-                 * ! if true, return data
-                 * ! if false, return error
-                 */
+                // * validation peoduct
+                const validProduct =  await validation(product);
+                 // * convert to array
+                const dataValidProduct = Object.keys(validProduct).map((_) => validProduct[_]);
 
-                //! make a function for the query, because it is used over and over 
-                //  * insert data
+                // * insert data
                 await queries.connectionQuery(
                     `
                         INSERT INTO products
                         (name, description, price, image_url)
                         VALUES ?
                     `,
-                    [[product]], 
+                    [[dataValidProduct]], 
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
@@ -74,7 +73,6 @@ async function store(req, res, next) {
                             });
                         }
                 });
-
                
                 // ! select data to find out the data entered by the user (temporarily) 
                await queries.connectionQuery(
@@ -102,10 +100,6 @@ async function store(req, res, next) {
         // * commit
         await queries.commit();
     }catch (err) {
-        /**
-        * ! The handler can't be used
-        * ! Need a decorator!!... 
-         */
         // * check error type 
         if(err && err.name === 'ValidationError'){
             return res.json({
@@ -210,13 +204,13 @@ async function update(req, res, next) {
                             } 
                 });
             
-                /**    
-                * ! check connection query 
-                * ! if true, return data
-                * ! if false, return error
-                */
+                // * validation peoduct
+                const validProduct =  await validation(product);
+                // * convert to array
+                const dataValidProduct = Object.keys(validProduct).map((_) => validProduct[_]);
 
-                // ! make a function for the query, because it is used over and over 
+                dataValidProduct.push(Number(req.params.id));
+
                 // * update data
                 await queries.connectionQuery(
                         `
@@ -227,7 +221,7 @@ async function update(req, res, next) {
                             image_url = ?
                             WHERE id = ?
                         `, 
-                        product, 
+                        dataValidProduct, 
                         async function(err) {
                             // * handle failed query 
                             if(err) {
@@ -333,6 +327,5 @@ async function destroy(req, res, next) {
         next(err);
     }
 }
-
 
 module.exports = { store, index, update, destroy};
