@@ -11,7 +11,7 @@ app.set('port', port);
 const server = http.createServer(app);
 
 dbConnection.connect(function(err) {
-    // * Tangkap error koneksi DB
+    // * Catch DB connection error
     if (err) {
         console.error('error connecting: ' + err.stack);
         return;
