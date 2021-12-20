@@ -6,6 +6,7 @@ const { dbConnection } = require('./../../../database');
 
 // ! This sql query is only used temporarily
 function Queries() {
+	// ! experimental
 	this.transaction = async function(query) {
 		 // * start transaction
         return await dbConnection.query(query);
@@ -16,6 +17,7 @@ function Queries() {
 		return await dbConnection.query(query, payload, asyncFunc);
 	}
 
+	// ! experimental
     this.rollback = async function() {
     	// * rollback
     	return await dbConnection.rollback(function(err) {
@@ -23,6 +25,7 @@ function Queries() {
                     });
     }
 
+	// ! experimental
     this.commit = async function(query) {	
        // * commit
        return await dbConnection.query(query);

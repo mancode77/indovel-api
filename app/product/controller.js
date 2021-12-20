@@ -22,6 +22,7 @@ async function store(req, res, next) {
         }
 
         // * start transaction
+        // ! experimental
         await queries.transaction('START TRANSACTION');
 
         // * check whether to make a file request 
@@ -65,11 +66,18 @@ async function store(req, res, next) {
                         // * handle failed query 
                         // * rollback
                         if(err) {
+                            // ! experimental
                             await queries.rollback();
+
+                            return res.json({
+                                error: 1,
+                                message: err.sqlMessage,
+                            });
                         }
                 });
                
                 // * commit
+                // ! experimental
                 await queries.commit('COMMIT');
 
                 // ! select data to find out the data entered by the user (temporarily) 
@@ -79,7 +87,12 @@ async function store(req, res, next) {
                         // * handle failed query 
                         if(err) {
                             // * rollback
+                            // ! experimental
                             queries.rollback();
+                            return res.json({
+                                error: 1,
+                                message: err.sqlMessage,
+                            });
                         } 
                         return res.json(rows);
                 });
@@ -106,6 +119,7 @@ async function index(req, res, next) {
         let { limit = 10, skip = 0 } = req.query;
 
         // * start transaction
+        // ! experimental
         await queries.transaction('START TRANSACTION');
 
         // ! select data to find out the data entered by the user (temporarily) 
@@ -120,6 +134,7 @@ async function index(req, res, next) {
                 } 
 
                  // * commit
+                // ! experimental
                 await queries.commit('COMMIT');
                 
                 return res.json(rows);
@@ -143,6 +158,7 @@ async function update(req, res, next) {
         }
 
         // * start transaction
+        // ! experimental
         await queries.transaction('START TRANSACTION');
 
         // * check whether to make a file request 
@@ -186,7 +202,13 @@ async function update(req, res, next) {
                             // * handle failed query 
                             if(err) {
                                 // * rollback
+                                // ! experimental
                                 queries.rollback();
+                                
+                                return res.json({
+                                    error: 1,
+                                    message: err.sqlMessage,
+                                });
                             } 
                 });
             
@@ -212,6 +234,7 @@ async function update(req, res, next) {
                             // * handle failed query 
                             if(err) {
                                 // * rollback
+                                // ! experimental
                                 queries.rollback();
 
                                 //! error handling (temporary) 
@@ -223,7 +246,8 @@ async function update(req, res, next) {
                 });
 
                 // * commit
-                // await queries.commit('COMMIT');
+                // ! experimental
+                await queries.commit('COMMIT');
             
                 // ! select data to find out the data entered by the user (temporarily)
                 await queries.connectionQuery(
@@ -232,7 +256,13 @@ async function update(req, res, next) {
                         // * handle failed query 
                         if(err) {
                            // * rollback
+                           // ! experimental
                            queries.rollback();
+
+                           return res.json({
+                            error: 1,
+                            message: err.sqlMessage,
+                            });
                         } 
                         return res.json(rows);
                     });
@@ -269,6 +299,7 @@ async function update(req, res, next) {
 async function destroy(req, res, next) {
      try {
         // * start transaction
+        // ! experimental
         await queries.transaction('START TRANSACTION');
 
         // ! select data to find out the data entered by the user (temporarily) 
@@ -280,7 +311,13 @@ async function destroy(req, res, next) {
                 // * handle failed query 
                 if(err) {
                     // * rollback
+                    // ! experimental
                     queries.rollback();
+
+                    return res.json({
+                        error: 1,
+                        message: err.sqlMessage,
+                    });
                 } 
                 
                 if(rows.length > 0) {
@@ -299,11 +336,17 @@ async function destroy(req, res, next) {
                             if(err) {
                                // * rollback
                                queries.rollback();
+
+                               return res.json({
+                                error: 1,
+                                message: err.sqlMessage,
+                            });
                             } 
                         });
                 }
 
                 // * commit
+                // ! experimental
                 await queries.commit('COMMIT');
 
                 return res.json(rows);
