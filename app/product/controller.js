@@ -22,7 +22,7 @@ async function store(req, res, next) {
         }
 
         // * start transaction
-        await queries.transaction();
+        await queries.transaction('START TRANSACTION');
 
         // * check whether to make a file request 
         if(req.file) {
@@ -48,8 +48,9 @@ async function store(req, res, next) {
                 let product = [...dataPayload, filename];
 
                 // * validation peoduct
-                const validProduct =  await validation(product);
+                const validProduct = await validation(product);
                  // * convert to array
+                 console.info(validProduct);
                 const dataValidProduct = Object.keys(validProduct).map((_) => validProduct[_]);
 
                 // * insert data
@@ -60,22 +61,19 @@ async function store(req, res, next) {
                         VALUES ?
                     `,
                     [[dataValidProduct]], 
-                    async function(err, rows) {
+                    async function(err) {
                         // * handle failed query 
+                        // * rollback
                         if(err) {
-                            // * rollback
-                            queries.rollback();
-
-                            //! error handling (temporary) 
-                            return res.json({
-                                error: 1,
-                                message: err.sqlMessage,
-                            });
+                            await queries.rollback();
                         }
                 });
                
+                // * commit
+                await queries.commit('COMMIT');
+
                 // ! select data to find out the data entered by the user (temporarily) 
-               await queries.connectionQuery(
+                await queries.connectionQuery(
                    "SELECT * FROM products ORDER BY id DESC LIMIT 1", 
                      async function(err, rows) {
                         // * handle failed query 
@@ -96,19 +94,7 @@ async function store(req, res, next) {
                 message: 'Harus menggunakan gambar'
             });
         }
-
-        // * commit
-        await queries.commit();
     }catch (err) {
-        // * check error type 
-        if(err && err.name === 'ValidationError'){
-            return res.json({
-                error: 1,
-                message: err.message,
-                fields: err.errors
-            });
-        }
-
         // * error handling by express 
         next(err);
     }
@@ -120,7 +106,7 @@ async function index(req, res, next) {
         let { limit = 10, skip = 0 } = req.query;
 
         // * start transaction
-        await queries.transaction();
+        await queries.transaction('START TRANSACTION');
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
@@ -132,12 +118,12 @@ async function index(req, res, next) {
                     // * rollback
                     queries.rollback();
                 } 
+
+                 // * commit
+                await queries.commit('COMMIT');
                 
                 return res.json(rows);
         });
-        
-        // * commit
-        await queries.commit();
     }catch(err) {
          // * error handling by express 
         next(err);
@@ -157,7 +143,7 @@ async function update(req, res, next) {
         }
 
         // * start transaction
-        await queries.transaction();
+        await queries.transaction('START TRANSACTION');
 
         // * check whether to make a file request 
         if(req.file) {
@@ -235,6 +221,9 @@ async function update(req, res, next) {
                                 });
                             }
                 });
+
+                // * commit
+                // await queries.commit('COMMIT');
             
                 // ! select data to find out the data entered by the user (temporarily)
                 await queries.connectionQuery(
@@ -258,9 +247,6 @@ async function update(req, res, next) {
                 message: 'Harus menggunakan gambar'
             });
         }
-
-        // * commit
-        await queries.commit();
     }catch (err) {
         /**
         * ! The handler can't be used
@@ -283,7 +269,7 @@ async function update(req, res, next) {
 async function destroy(req, res, next) {
      try {
         // * start transaction
-        await queries.transaction();
+        await queries.transaction('START TRANSACTION');
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
@@ -317,11 +303,11 @@ async function destroy(req, res, next) {
                         });
                 }
 
+                // * commit
+                await queries.commit('COMMIT');
+
                 return res.json(rows);
             });
-
-        // * commit
-        await queries.commit();
     }catch(err) {
          // * error handling by express 
         next(err);
