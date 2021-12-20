@@ -2,6 +2,7 @@
 
 const path = require('path');
 const productRouter = require('./app/product/router');
+const categoryRouter = require('./app/category/router');
 const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // * router api
 app.use('/api', productRouter);
+app.use('/api', categoryRouter);
 
 // * catch 404 and pass to error handler 
 app.use(function(req, res, next) {
