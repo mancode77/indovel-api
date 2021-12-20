@@ -6,26 +6,14 @@ const { dbConnection } = require('./../../../database');
 
 // ! This sql query is only used temporarily
 function Queries() {
-	this.transaction = async function() {
+	this.transaction = async function(query) {
 		 // * start transaction
-        return await dbConnection.beginTransaction(function(err) {
-                if(err) {
-                    console.error(`Failed to make a transaction : ${err}`);
-                    return;
-                }
-            });
+        return await dbConnection.query(query);
 	}
 
 	this.connectionQuery = async function(...args) {
-		if(args.length === 2) {
-			let [query, asyncFunc] = args;
-			return await dbConnection.query(query, asyncFunc);
-		}
-
-		if(args.length === 3) {
-			let [query, payload, asyncFunc] = args;
-			return await dbConnection.query(query, payload, asyncFunc);
-		}
+		let [query, payload, asyncFunc] = args;
+		return await dbConnection.query(query, payload, asyncFunc);
 	}
 
     this.rollback = async function() {
@@ -35,14 +23,9 @@ function Queries() {
                     });
     }
 
-    this.commit = async function() {	
+    this.commit = async function(query) {	
        // * commit
-       return await dbConnection.commit(function(err) {
-                if(err) {
-                    console.error(`Failed to commit : ${err}`);
-                    return;
-                }
-            });
+       return await dbConnection.query(query);
     }
 }
 
