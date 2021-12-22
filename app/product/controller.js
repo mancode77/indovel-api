@@ -25,6 +25,33 @@ async function store(req, res, next) {
         // ! experimental
         await queries.transaction('START TRANSACTION');
 
+        // * catch category product
+        // ! select data to find out the data entered by the user (temporarily) 
+        await queries.connectionQuery(
+            "SELECT * FROM categories WHERE id = ? ",
+            dataPayload[1],
+            async function(err, rows) {
+
+                   // * handle failed query 
+                   if(err) {
+                       // * rollback
+                       // ! experimental
+                       queries.rollback();
+                       
+                       return res.json({
+                           error: 1,
+                           message: err.sqlMessage,
+                       });
+                   }
+                   
+                   if(rows.length < 1) {
+                        return res.json({
+                            error: 1,
+                            message: 'Category tidak tersedia',
+                        });
+                   }
+        });
+
         // * check whether to make a file request 
         if(req.file) {
             let tmp_path = req.file.path;
@@ -160,6 +187,33 @@ async function update(req, res, next) {
         // * start transaction
         // ! experimental
         await queries.transaction('START TRANSACTION');
+
+        // * catch category product
+        // ! select data to find out the data entered by the user (temporarily) 
+        await queries.connectionQuery(
+            "SELECT * FROM categories WHERE id = ? ",
+            dataPayload[1],
+            async function(err, rows) {
+
+                   // * handle failed query 
+                   if(err) {
+                       // * rollback
+                       // ! experimental
+                       queries.rollback();
+                       
+                       return res.json({
+                           error: 1,
+                           message: err.sqlMessage,
+                       });
+                   }
+                   
+                   if(rows.length < 1) {
+                        return res.json({
+                            error: 1,
+                            message: 'Category tidak tersedia',
+                        });
+                   }
+        });
 
         // * check whether to make a file request 
         if(req.file) {
