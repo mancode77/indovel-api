@@ -142,10 +142,8 @@ async function store(req, res, next) {
                         (products.id_category 
                         = 
                         categories.id)
-                        JOIN tags ON
-                        (products.id_tag
-                        = 
-                        tags.id)
+                        JOIN tags_detail ON
+                        (JOIN tags ON (tag_detail.id_tag = tags.id))
                         WHERE products.id = ?
                    `, 
                     dataValidProduct.pop(),
@@ -191,16 +189,16 @@ async function index(req, res, next) {
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
-            `SELECT * FROM products
-            JOIN categories ON 
-            (products.id_category 
-            = 
-            categories.id)
-            JOIN tags ON
-            (products.id_tag
-            = 
-            tags.id)
-            ORDER BY product.id DESC LIMIT ?, ?`,
+            `
+                SELECT * FROM products
+                JOIN categories ON 
+                (products.id_category 
+                = 
+                categories.id)
+                JOIN tags_detail ON
+                (JOIN tags ON (tag_detail.id_tag = tags.id))
+                ORDER BY product.id DESC LIMIT ?, ?
+            `,
             [Number(skip), Number(limit)],
             async function(err, rows) {
                 // * handle failed query 
@@ -382,15 +380,16 @@ async function update(req, res, next) {
             
                 // ! select data to find out the data entered by the user (temporarily)
                 await queries.connectionQuery(
-                    `SELECT * FROM products
-                    JOIN categories ON 
-                    (products.id_category 
-                    = 
-                    categories.id)
-                    JOIN tags ON
-                    (products.id_tag
-                    = 
-                    tags.id) WHERE products.id = ?`,  
+                    ` 
+                        SELECT * FROM products
+                        JOIN categories ON 
+                        (products.id_category 
+                        = 
+                        categories.id)
+                        JOIN tags_detail ON
+                        (JOIN tags ON (tag_detail.id_tag = tags.id))
+                        WHERE products.id = ?
+                    `,  
                     dataValidProduct.pop(),
                     async function(err, rows) {
                         // * handle failed query 
