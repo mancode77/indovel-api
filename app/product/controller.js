@@ -52,6 +52,33 @@ async function store(req, res, next) {
                    }
         });
 
+        // * catch tag product
+        // ! select data to find out the data entered by the user (temporarily) 
+        await queries.connectionQuery(
+            "SELECT * FROM tags WHERE id = ? ",
+            dataPayload[2],
+            async function(err, rows) {
+
+                   // * handle failed query 
+                   if(err) {
+                       // * rollback
+                       // ! experimental
+                       queries.rollback();
+                       
+                       return res.json({
+                           error: 1,
+                           message: err.sqlMessage,
+                       });
+                   }
+                   
+                   if(rows.length < 1) {
+                        return res.json({
+                            error: 1,
+                            message: 'Tag tidak tersedia',
+                        });
+                   }
+        });
+
         // * check whether to make a file request 
         if(req.file) {
             let tmp_path = req.file.path;
@@ -85,7 +112,7 @@ async function store(req, res, next) {
                 await queries.connectionQuery(
                     `
                         INSERT INTO products
-                        (name, description, price, image_url)
+                        (id_category, name, description, price, image_url)
                         VALUES ?
                     `,
                     [[dataValidProduct]], 
@@ -107,10 +134,22 @@ async function store(req, res, next) {
                 // ! experimental
                 await queries.commit('COMMIT');
 
-                // ! select data to find out the data entered by the user (temporarily) 
+                // ! select data to find out the data entered, by category and tag, by the user (temporarily) 
                 await queries.connectionQuery(
-                   "SELECT * FROM products ORDER BY id DESC LIMIT 1", 
-                     async function(err, rows) {
+                   `
+                        SELECT * FROM products
+                        JOIN categories ON 
+                        (products.id_category 
+                        = 
+                        categories.id)
+                        JOIN tags ON
+                        (products.id_tag
+                        = 
+                        tags.id)
+                        WHERE products.id = ?
+                   `, 
+                    dataValidProduct.pop(),
+                    async function(err, rows) {
                         // * handle failed query 
                         if(err) {
                             // * rollback
@@ -121,6 +160,7 @@ async function store(req, res, next) {
                                 message: err.sqlMessage,
                             });
                         } 
+
                         return res.json(rows);
                 });
             });
@@ -151,7 +191,16 @@ async function index(req, res, next) {
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
-            `SELECT * FROM products ORDER BY id DESC LIMIT ?, ?`,
+            `SELECT * FROM products
+            JOIN categories ON 
+            (products.id_category 
+            = 
+            categories.id)
+            JOIN tags ON
+            (products.id_tag
+            = 
+            tags.id)
+            ORDER BY product.id DESC LIMIT ?, ?`,
             [Number(skip), Number(limit)],
             async function(err, rows) {
                 // * handle failed query 
@@ -211,6 +260,33 @@ async function update(req, res, next) {
                         return res.json({
                             error: 1,
                             message: 'Category tidak tersedia',
+                        });
+                   }
+        });
+
+        // * catch tag product
+        // ! select data to find out the data entered by the user (temporarily) 
+        await queries.connectionQuery(
+            "SELECT * FROM tags WHERE id = ?",
+            dataPayload[2],
+            async function(err, rows) {
+
+                   // * handle failed query 
+                   if(err) {
+                       // * rollback
+                       // ! experimental
+                       queries.rollback();
+                       
+                       return res.json({
+                           error: 1,
+                           message: err.sqlMessage,
+                       });
+                   }
+                   
+                   if(rows.length < 1) {
+                        return res.json({
+                            error: 1,
+                            message: 'Tag tidak tersedia',
                         });
                    }
         });
@@ -277,6 +353,7 @@ async function update(req, res, next) {
                 await queries.connectionQuery(
                         `
                             UPDATE products SET 
+                            id_category = ?
                             name = ?, 
                             description = ?, 
                             price = ?, 
@@ -305,7 +382,16 @@ async function update(req, res, next) {
             
                 // ! select data to find out the data entered by the user (temporarily)
                 await queries.connectionQuery(
-                    "SELECT * FROM products ORDER BY id DESC LIMIT 1",  
+                    `SELECT * FROM products
+                    JOIN categories ON 
+                    (products.id_category 
+                    = 
+                    categories.id)
+                    JOIN tags ON
+                    (products.id_tag
+                    = 
+                    tags.id) WHERE products.id = ?`,  
+                    dataValidProduct.pop(),
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
@@ -411,4 +497,4 @@ async function destroy(req, res, next) {
     }
 }
 
-module.exports = { store, index, update, destroy};
+module.exports = { store, index, update, destroy };
