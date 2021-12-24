@@ -17,7 +17,7 @@ async function store (req, res, next) {
 
         // * insert category
         await dbConnection.query( 
-            `INSERT INTO tags (name)VALUES ?`,
+            `INSERT INTO tags (name) VALUES ?`,
             [[validTag]], 
             async function(err) {
             // * handle failed query 
