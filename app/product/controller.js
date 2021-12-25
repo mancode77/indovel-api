@@ -181,11 +181,44 @@ async function store(req, res, next) {
 async function index(req, res, next) {
     try {
 
-        let { limit = 10, skip = 0 } = req.query;
+        let { limit = 10, skip = 0, q = '' , category = '', tags = []} = req.query;
 
         // * start transaction
         // ! experimental
         await queries.transaction('START TRANSACTION');
+
+        // * check, whether to use keyword filters based on product, category, tags or one of them
+        if(q.length || category.length || tags.length) {
+            // ! select data to find out the data entered by the user (temporarily) 
+            await queries.connectionQuery(
+            `
+                SELECT * FROM products
+                JOIN categories ON 
+                (products.id_category 
+                = 
+                categories.id)
+                JOIN tags_detail ON
+                (JOIN tags ON (tag_detail.id_tag = tags.id))
+                WHERE MATCH
+                (products.name, categories.name, tags.name) 
+                AGAINTS(?,?,? IN NATURAL LANGUAGE MODE)
+                ORDER BY product.id DESC LIMIT ?, ?
+            `,
+            [q, category, tags, Number(skip), Number(limit)],
+            async function(err, rows) {
+                // * handle failed query 
+                if(err) {
+                    // * rollback
+                    queries.rollback();
+                } 
+
+                 // * commit
+                // ! experimental
+                await queries.commit('COMMIT');
+                
+                return res.json(rows);
+            });
+        }
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
