@@ -3,6 +3,10 @@
 const Joi = require('joi');
 
 const productSchema = Joi.object({
+    id_category: Joi.number()
+    .max(11)
+    .required(),
+
     name: Joi.string()
         .min(3)
         .max(100)
@@ -23,10 +27,11 @@ const productSchema = Joi.object({
 async function validation(payload) {
     try {
         const dataPayload = {
-            name: payload[0],
-            description: payload[1],
-            price: Number(payload[2]),
-            image_url: payload[3]
+            id_category: Number(payload[0]),
+            name: payload[1],
+            description: payload[2],
+            price: Number(payload[3]),
+            image_url: payload[4]
         }
        
         // * check product structure
