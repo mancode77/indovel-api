@@ -23,58 +23,29 @@ async function store(req, res, next) {
 
         // * start transaction
         // ! experimental
-        await queries.transaction('START TRANSACTION');
+        // await queries.transaction('START TRANSACTION');
 
         // * catch category product
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
             "SELECT * FROM categories WHERE id = ? ",
-            dataPayload[1],
+            dataPayload[0],
             async function(err, rows) {
-
                    // * handle failed query 
                    if(err) {
                        // * rollback
                        // ! experimental
                        queries.rollback();
-                       
                        return res.json({
                            error: 1,
                            message: err.sqlMessage,
                        });
                    }
-                   
+                  
                    if(rows.length < 1) {
                         return res.json({
                             error: 1,
                             message: 'Category tidak tersedia',
-                        });
-                   }
-        });
-
-        // * catch tag product
-        // ! select data to find out the data entered by the user (temporarily) 
-        await queries.connectionQuery(
-            "SELECT * FROM tags WHERE id = ? ",
-            dataPayload[2],
-            async function(err, rows) {
-
-                   // * handle failed query 
-                   if(err) {
-                       // * rollback
-                       // ! experimental
-                       queries.rollback();
-                       
-                       return res.json({
-                           error: 1,
-                           message: err.sqlMessage,
-                       });
-                   }
-                   
-                   if(rows.length < 1) {
-                        return res.json({
-                            error: 1,
-                            message: 'Tag tidak tersedia',
                         });
                    }
         });
@@ -122,7 +93,7 @@ async function store(req, res, next) {
                         if(err) {
                             // ! experimental
                             await queries.rollback();
-
+                            
                             return res.json({
                                 error: 1,
                                 message: err.sqlMessage,
@@ -132,21 +103,19 @@ async function store(req, res, next) {
                
                 // * commit
                 // ! experimental
-                await queries.commit('COMMIT');
+                // await queries.commit('COMMIT');
 
                 // ! select data to find out the data entered, by category and tag, by the user (temporarily) 
                 await queries.connectionQuery(
                    `
-                        SELECT * FROM products
-                        JOIN categories ON 
-                        (products.id_category 
-                        = 
-                        categories.id)
-                        JOIN tags_detail ON
-                        (JOIN tags ON (tag_detail.id_tag = tags.id))
-                        WHERE products.id = ?
-                   `, 
-                    dataValidProduct.pop(),
+                        SELECT * FROM tags 
+                        JOIN tags_detail 
+                        ON (tags_detail.id_tag = tags.id) 
+                        JOIN products 
+                        ON (tags_detail.id_product = products.id) 
+                        JOIN categories 
+                        ON (categories.id = products.id);
+                   `,
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
