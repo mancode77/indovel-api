@@ -124,59 +124,115 @@ async function store(req, res, next) {
 
 async function index(req, res, next) {
     try {
-
-        let { limit = 10, skip = 0, q = '' , category = '', tags = []} = req.query;
+        // ! filter keyword category = '' tags = []
+        let { limit = 10, skip = 0, q = ''} = req.query;
 
         // * start transaction
         // ! experimental
         // await queries.transaction('START TRANSACTION');
 
-        // * check, whether to use keyword filters based on product, category, tags or one of them
-        
-
         // ! select data to find out the data entered by the user (temporarily) 
-        await queries.connectionQuery(
-            `
-                SELECT
-                categories.id AS category_id,
-                categories.name AS category_name,
-                categories.created_at AS category_created_at,
-                categories.updated_at AS category_updated_at,
-                products.name AS product_name,
-                products.description AS product_description,
-                products.id AS product_id,
-                products.price AS product_price,
-                products.image_url AS product_image_url,
-                products.created_at AS product_created_at,
-                products.updated_at AS product_updated_at,
-                tags.id AS tag_id,
-                tags.name AS tag_name,
-                tags.created_at AS tag_created_at,
-                tags.updated_at AS tag_updated_at
-                FROM tags 
-                JOIN tags_detail 
-                ON (tags_detail.id_tag = tags.id) 
-                JOIN products 
-                ON (tags_detail.id_product = products.id) 
-                JOIN categories 
-                ON (categories.id = products.id)
-                ORDER BY products.id DESC LIMIT ?, ?
-            `,
-            [Number(skip), Number(limit)],
+
+        // * filter keyword by product
+        if(q) {
+            await queries.connectionQuery(
+            queries.productFilter,
+            [q, Number(skip), Number(limit)],
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
-                     console.info('a')
                     // * rollback
-                    queries.rollback();
+                    // queries.rollback();
+                    console.error(err);
+
+                    return res.json({
+                        error: 1,
+                        message: 'Kesalahan menginputkan data',
+                    });
                 } 
 
                  // * commit
                 // ! experimental
                 // await queries.commit('COMMIT');
                 
+                if(!req.query.hasOwnProperty('category') && !req.query.hasOwnProperty('tags')) {
+                    return res.json(rows);
+                }
+            });
+        } else {
+            await queries.connectionQuery(
+            queries.sqlSelect,
+            [Number(skip), Number(limit)],
+            async function(err, rows) {
+                // * handle failed query 
+                if(err) {
+                    // * rollback
+                    queries.rollback();
+
+                    return res.json({
+                        error: 1,
+                        message: 'Kesalahan menginputkan data',
+                    });
+                } 
+
+                 // * commit
+                // ! experimental
+                // await queries.commit('COMMIT');
                 return res.json(rows);
-        });
+            });
+        }
+
+        // ! comming soon
+
+        //     //* filter keyword by category
+        //     if(category) {
+        //         await queries.connectionQuery(
+        //         queries.categoryFilter,
+        //         [category, Number(skip), Number(limit)],
+        //         async function(err, rows) {
+        //             // * handle failed query 
+        //             if(err) {
+        //                 // * rollback
+        //                 queries.rollback();
+
+        //                 return res.json({
+        //                     error: 1,
+        //                     message: 'Kesalahan menginputkan data',
+        //                 });
+        //             } 
+
+        //              // * commit
+        //             // ! experimental
+        //             // await queries.commit('COMMIT');
+                    
+        //              if(!req.query.hasOwnProperty('tags')) {
+        //                 return res.json(rows);
+        //             }
+        //         });
+        //     }
+
+        //     // * filter keyword by ta
+        //     if(tags) {
+        //         let [tag] = tags;
+
+        //         await queries.connectionQuery(
+        //         queries.tagFilter,
+        //         [tag, Number(skip), Number(limit)],
+        //         async function(err, rows) {
+        //             // * handle failed query 
+        //             if(err) {
+        //                 // * rollback
+        //                 queries.rollback();
+        //             } 
+
+        //              // * commit
+        //             // ! experimental
+        //             // await queries.commit('COMMIT');
+                    
+        //             return res.json(rows);
+        //         });
+        //     }
+
     }catch(err) {
          // * error handling by express 
         next(err);
