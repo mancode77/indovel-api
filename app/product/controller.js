@@ -89,7 +89,7 @@ async function store(req, res, next) {
                         JOIN products 
                         ON (tags_detail.id_product = products.id) 
                         JOIN categories 
-                        ON (categories.id = products.id);
+                        ON (categories.id = products.id)
                    `,
                     async function(err, rows) {
                         // * handle failed query 
@@ -129,64 +129,51 @@ async function index(req, res, next) {
 
         // * start transaction
         // ! experimental
-        await queries.transaction('START TRANSACTION');
+        // await queries.transaction('START TRANSACTION');
 
         // * check, whether to use keyword filters based on product, category, tags or one of them
-        if(q.length || category.length || tags.length) {
-            // ! select data to find out the data entered by the user (temporarily) 
-            await queries.connectionQuery(
-            `
-                SELECT * FROM products
-                JOIN categories ON 
-                (products.id_category 
-                = 
-                categories.id)
-                JOIN tags_detail ON
-                (JOIN tags ON (tag_detail.id_tag = tags.id))
-                WHERE MATCH
-                (products.name, categories.name, tags.name) 
-                AGAINTS(?,?,? IN NATURAL LANGUAGE MODE)
-                ORDER BY product.id DESC LIMIT ?, ?
-            `,
-            [q, category, tags, Number(skip), Number(limit)],
-            async function(err, rows) {
-                // * handle failed query 
-                if(err) {
-                    // * rollback
-                    queries.rollback();
-                } 
-
-                 // * commit
-                // ! experimental
-                await queries.commit('COMMIT');
-                
-                return res.json(rows);
-            });
-        }
+        
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
             `
-                SELECT * FROM products
-                JOIN categories ON 
-                (products.id_category 
-                = 
-                categories.id)
-                JOIN tags_detail ON
-                (JOIN tags ON (tag_detail.id_tag = tags.id))
-                ORDER BY product.id DESC LIMIT ?, ?
+                SELECT
+                categories.id AS category_id,
+                categories.name AS category_name,
+                categories.created_at AS category_created_at,
+                categories.updated_at AS category_updated_at,
+                products.name AS product_name,
+                products.description AS product_description,
+                products.id AS product_id,
+                products.price AS product_price,
+                products.image_url AS product_image_url,
+                products.created_at AS product_created_at,
+                products.updated_at AS product_updated_at,
+                tags.id AS tag_id,
+                tags.name AS tag_name,
+                tags.created_at AS tag_created_at,
+                tags.updated_at AS tag_updated_at
+                FROM tags 
+                JOIN tags_detail 
+                ON (tags_detail.id_tag = tags.id) 
+                JOIN products 
+                ON (tags_detail.id_product = products.id) 
+                JOIN categories 
+                ON (categories.id = products.id)
+                ORDER BY products.id DESC LIMIT ?, ?
             `,
             [Number(skip), Number(limit)],
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
+                     console.info('a')
                     // * rollback
                     queries.rollback();
                 } 
 
                  // * commit
                 // ! experimental
-                await queries.commit('COMMIT');
+                // await queries.commit('COMMIT');
                 
                 return res.json(rows);
         });
