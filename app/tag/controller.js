@@ -9,27 +9,48 @@ async function store (req, res, next) {
         let payload = req.body;
 
         // ! START TRANSACTION
-
+       
         // * check schema
-        const tag = await tagSchema.validateAsync(payload);
-        // * konversion object to array
-        const validTag = Object.keys(tag).map((_) => tag[_]);
+        // ! REPAIR
+        // const tag = null;
 
+        // try {
+        //      // * check schema
+        //     tag = await tagSchema.validateAsync(payload);
+        //     console.info(tag);
+        // } catch (err) {
+        //     return res.json({
+        //                 error: 1,
+        //                 product: err._original, 
+        //                 details_error: {
+        //                     message: err.details[0].message
+        //                 }
+        //     });
+        // }
+
+        // * konversion object to array
+        const validTag = Object.keys(payload).map((_) => payload[_]);
+      
         // * insert category
         await dbConnection.query( 
             `INSERT INTO tags (name) VALUES ?`,
             [[validTag]], 
-            async function(err) {
-            // * handle failed query 
+            async function(err, rows) {
+                // * handle failed query 
+                // * ROLLBACK
+                // ! EXPERIMENTAL
+                
                 if(err) {
+                    // * ROLLBACK
                     // ! EXPERIMENTAL
-                     // * ROLLBACK
-                    console.error(err)
-                    return res.json({
-                        error: 1,
-                        message: err.sqlMessage,
+                        
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
                     });
                 }
+
             });
 
             // * COMMIT
@@ -43,11 +64,11 @@ async function store (req, res, next) {
                     if(err) {
                         // * ROLLBACK
                         // ! EXPERIMENTAL
-                        console.error(err);
                         
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                        // * debug
+                       console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
                     }
 
@@ -74,17 +95,32 @@ async function update (req, res, next) {
             async function(err, rows) {
                    // * handle failed query 
                    if(err) {
-                        // ! EXPERIMENTAL
                         // * ROLLBACK
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                        // ! EXPERIMENTAL
+                        // * debug
+                        console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
-                   } 
+                    }
         });
 
         // * check schema
         const tag = await tagSchema.validateAsync(payload);
+
+        // * check schema
+        try {
+            const category = await categorySchema.validateAsync(payload);
+        } catch (err) {
+            return res.json({
+                        error: 1,
+                        product: err._original, 
+                        details_error: {
+                            message: err.details[0].message
+                        }
+            });
+        }
+
         // * konversion object to array
         const validTag = Object.keys(tag).map((_) => tag[_]);
 
@@ -96,15 +132,18 @@ async function update (req, res, next) {
             `UPDATE categories SET name = ? WHERE id = ?`,
             validTag, 
             async function(err) {
-            // * handle failed query 
+                // * handle failed query 
+                // * ROLLBACK
+                // ! EXPERIMENTAL
+                
                 if(err) {
-                    // ! EXPERIMENTAL
                     // * ROLLBACK
-                    console.error(err);
-                    
-                    return res.json({
-                        error: 1,
-                        message: err.sqlMessage,
+                    // ! EXPERIMENTAL
+                        
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
                     });
                 }
             });
@@ -120,11 +159,11 @@ async function update (req, res, next) {
                     if(err) {
                         // * ROLLBACK
                         // ! EXPERIMENTAL
-                        console.error(err);
-
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                        
+                        // * debug
+                        console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
                     } 
                     return res.json(rows);
@@ -152,12 +191,12 @@ async function destroy(req, res, next) {
                if(err) {
                     // * ROLLBACK
                     // ! EXPERIMENTAL
-                    console.error(err);
-
-                   return res.json({
-                       error: 1,
-                       message: err.sqlMessage,
-                   });
+                    
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
+                    });
                } 
                
               
@@ -165,16 +204,19 @@ async function destroy(req, res, next) {
                        `DELETE FROM tags WHERE id = ?`, 
                        rows[0].id, 
                        async function(){
+                           // * ROLLBACK
+                           // ! EXPERIMENTAL
+                            
                            if(err) {
                                 // * ROLLBACK
                                 // ! EXPERIMENTAL
-                                console.error(err);
-
-                                return res.json({
-                                    error: 1,
-                                    message: err.sqlMessage,
-                                 });
-                           } 
+                                    
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
                     });
 
                return res.json(rows);
