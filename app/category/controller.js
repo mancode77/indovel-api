@@ -11,7 +11,18 @@ async function store (req, res, next) {
         // ! START TRANSACTION
 
         // * check schema
-        const category = await categorySchema.validateAsync(payload);
+        try {
+            const category = await categorySchema.validateAsync(payload);
+        } catch (err) {
+            return res.json({
+                        error: 1,
+                        product: err._original, 
+                        details_error: {
+                            message: err.details[0].message
+                        }
+            });
+        }
+      
         // * konversion object to array
         const validCategory = Object.keys(category).map((_) => category[_]);
 
@@ -21,15 +32,14 @@ async function store (req, res, next) {
             [[validCategory]], 
             async function(err) {
             // * handle failed query 
-                if(err) {
-                    // ! EXPERIMENTAL
-                     // * ROLLBACK
-                    console.error(err)
-                    return res.json({
-                        error: 1,
-                        message: err.sqlMessage,
-                    });
-                }
+            // * ROLLBACK
+            // ! EXPERIMENTAL               
+                           
+            // * debug
+                console.error({
+                    sqlMessage: err.sqlMessage,
+                    sql: err.sql 
+                });
             });
 
             // * COMMIT
@@ -43,10 +53,11 @@ async function store (req, res, next) {
                     if(err) {
                         // * ROLLBACK
                         // ! EXPERIMENTAL
-                        console.error(err)
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                           
+                        // * debug
+                        console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
                     }
 
@@ -75,15 +86,31 @@ async function update (req, res, next) {
                    if(err) {
                         // ! EXPERIMENTAL
                         // * ROLLBACK
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                        
+                        // * debug
+                        console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
                    } 
         });
 
         // * check schema
         const category = await categorySchema.validateAsync(payload);
+
+        // * check schema
+        try {
+            const category = await categorySchema.validateAsync(payload);
+        } catch (err) {
+            return res.json({
+                        error: 1,
+                        product: err._original, 
+                        details_error: {
+                            message: err.details[0].message
+                        }
+            });
+        }
+
         // * konversion object to array
         const validCategory = Object.keys(category).map((_) => category[_]);
 
@@ -95,17 +122,14 @@ async function update (req, res, next) {
             `UPDATE categories SET name = ? WHERE id = ?`,
             validCategory, 
             async function(err) {
-            // * handle failed query 
-                if(err) {
-                    // ! EXPERIMENTAL
-                    // * ROLLBACK
-                    console.error(err);
-                    
-                    return res.json({
-                        error: 1,
-                        message: err.sqlMessage,
-                    });
-                }
+                // * handle failed query
+                // ! EXPERIMENTAL
+                // * ROLLBACK
+                // * debug
+                console.error({
+                    sqlMessage: err.sqlMessage,
+                    sql: err.sql 
+                });
             });
 
             // * COMMIT
@@ -119,13 +143,14 @@ async function update (req, res, next) {
                     if(err) {
                         // * ROLLBACK
                         // ! EXPERIMENTAL
-                        console.error(err);
-
-                        return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
+                        
+                        // * debug
+                        console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
                         });
                     } 
+
                     return res.json(rows);
              });
     }catch (err) {
@@ -151,12 +176,12 @@ async function destroy(req, res, next) {
                if(err) {
                     // * ROLLBACK
                     // ! EXPERIMENTAL
-                    console.error(err);
-
-                   return res.json({
-                       error: 1,
-                       message: err.sqlMessage,
-                   });
+                  
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
+                    });
                } 
                
               
@@ -164,16 +189,14 @@ async function destroy(req, res, next) {
                        `DELETE FROM products WHERE id = ?`, 
                        rows[0].id, 
                        async function(){
-                           if(err) {
-                                // * ROLLBACK
-                                // ! EXPERIMENTAL
-                                console.error(err);
-
-                                return res.json({
-                                    error: 1,
-                                    message: err.sqlMessage,
-                                 });
-                           } 
+                            // * ROLLBACK
+                            // ! EXPERIMENTAL
+                            
+                            // * debug
+                            console.error({
+                                sqlMessage: err.sqlMessage,
+                                sql: err.sql 
+                            });
                     });
 
                return res.json(rows);
