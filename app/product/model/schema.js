@@ -37,8 +37,13 @@ async function validation(payload) {
         // * check product structure
         return await productSchema.validateAsync(dataPayload);
     } catch (err) {
-        return err;
-        return err.details[0].message;
+        return { 
+            error: 1,
+            product: err._original, 
+            details_error: {
+                message: err.details[0].message
+            } 
+        };
     }
 }
 
