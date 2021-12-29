@@ -50,30 +50,40 @@ async function store(req, res, next) {
 
                 // * validation peoduct
                 const validProduct = await validation(product);
-                 // * convert to array
-                 console.info(validProduct);
+
+                // * error validation
+                if(validProduct.hasOwnProperty('error')) {
+                    return res.json({
+                                error: 1,
+                                product: err._original, 
+                                details_error: {
+                                    message: err.details[0].message
+                                }
+                            });
+                }
+
+                // * convert to array
                 const dataValidProduct = Object.keys(validProduct).map((_) => validProduct[_]);
 
                 // * insert data
                 await queries.connectionQuery(
-                    `
-                        INSERT INTO products
-                        (id_category, name, description, price, image_url)
-                        VALUES ?
-                    `,
+                    `INSERT INTO products
+                    (id_category, name, description, price, image_url)
+                    VALUES ?`,
                     [[dataValidProduct]], 
                     async function(err) {
-                        // * handle failed query 
-                        // * rollback
-                        if(err) {
+                            // * handle failed query 
+                            // * rollback
                             // ! experimental
-                            await queries.rollback();
-                            
-                            return res.json({
-                                error: 1,
-                                message: err.sqlMessage,
-                            });
-                        }
+                            // await queries.rollback();
+                           
+                            if(err) {
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
                 });
                
                 // * commit
@@ -82,24 +92,23 @@ async function store(req, res, next) {
 
                 // ! select data to find out the data entered, by category and tag, by the user (temporarily) 
                 await queries.connectionQuery(
-                   `
-                        SELECT * FROM tags 
-                        JOIN tags_detail 
-                        ON (tags_detail.id_tag = tags.id) 
-                        JOIN products 
-                        ON (tags_detail.id_product = products.id) 
-                        JOIN categories 
-                        ON (categories.id = products.id)
-                   `,
+                   `SELECT * FROM tags 
+                    JOIN tags_detail 
+                    ON (tags_detail.id_tag = tags.id) 
+                    JOIN products 
+                    ON (tags_detail.id_product = products.id) 
+                    JOIN categories 
+                    ON (categories.id = products.id)`,
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
-                            // * rollback
-                            // ! experimental
-                            queries.rollback();
-                            return res.json({
-                                error: 1,
-                                message: err.sqlMessage,
+                             // ! experimental
+                            // await queries.rollback();
+                           
+                            // * debug
+                            console.error({
+                                sqlMessage: err.sqlMessage,
+                                sql: err.sql 
                             });
                         } 
 
@@ -141,13 +150,13 @@ async function index(req, res, next) {
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
-                    // * rollback
-                    // queries.rollback();
-                    console.error(err);
-
-                    return res.json({
-                        error: 1,
-                        message: 'Kesalahan menginputkan data',
+                    // ! experimental
+                    // await queries.rollback();
+                           
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
                     });
                 } 
 
@@ -166,12 +175,13 @@ async function index(req, res, next) {
             async function(err, rows) {
                 // * handle failed query 
                 if(err) {
-                    // * rollback
-                    queries.rollback();
-
-                    return res.json({
-                        error: 1,
-                        message: 'Kesalahan menginputkan data',
+                    // ! experimental
+                    // await queries.rollback();
+                           
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
                     });
                 } 
 
@@ -253,61 +263,7 @@ async function update(req, res, next) {
 
         // * start transaction
         // ! experimental
-        await queries.transaction('START TRANSACTION');
-
-        // * catch category product
-        // ! select data to find out the data entered by the user (temporarily) 
-        await queries.connectionQuery(
-            "SELECT * FROM categories WHERE id = ? ",
-            dataPayload[1],
-            async function(err, rows) {
-
-                   // * handle failed query 
-                   if(err) {
-                       // * rollback
-                       // ! experimental
-                       queries.rollback();
-                       
-                       return res.json({
-                           error: 1,
-                           message: err.sqlMessage,
-                       });
-                   }
-                   
-                   if(rows.length < 1) {
-                        return res.json({
-                            error: 1,
-                            message: 'Category tidak tersedia',
-                        });
-                   }
-        });
-
-        // * catch tag product
-        // ! select data to find out the data entered by the user (temporarily) 
-        await queries.connectionQuery(
-            "SELECT * FROM tags WHERE id = ?",
-            dataPayload[2],
-            async function(err, rows) {
-
-                   // * handle failed query 
-                   if(err) {
-                       // * rollback
-                       // ! experimental
-                       queries.rollback();
-                       
-                       return res.json({
-                           error: 1,
-                           message: err.sqlMessage,
-                       });
-                   }
-                   
-                   if(rows.length < 1) {
-                        return res.json({
-                            error: 1,
-                            message: 'Tag tidak tersedia',
-                        });
-                   }
-        });
+        // await queries.transaction('START TRANSACTION');
 
         // * check whether to make a file request 
         if(req.file) {
@@ -339,29 +295,41 @@ async function update(req, res, next) {
                      "SELECT * FROM products WHERE id = ? ",
                      Number(req.params.id),
                      async function(err, rows) {
+                             // * handle failed query 
+                            if(err) {
+                                // ! experimental
+                                // await queries.rollback();
+                           
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
+
                             // * absoulte path
                             let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
 
                             // * cek absolute path
                             if(fs.existsSync(currentImage)) {
                                 fs.unlinkSync(currentImage);
-                            }   
-
-                            // * handle failed query 
-                            if(err) {
-                                // * rollback
-                                // ! experimental
-                                queries.rollback();
-                                
-                                return res.json({
-                                    error: 1,
-                                    message: err.sqlMessage,
-                                });
-                            } 
+                            }    
                 });
             
                 // * validation peoduct
                 const validProduct =  await validation(product);
+                
+                // * error validation
+                if(validProduct.hasOwnProperty('error')) {
+                    return res.json({
+                                error: 1,
+                                product: err._original, 
+                                details_error: {
+                                    message: err.details[0].message
+                                }
+                            });
+                }
+                
                 // * convert to array
                 const dataValidProduct = Object.keys(validProduct).map((_) => validProduct[_]);
 
@@ -369,63 +337,57 @@ async function update(req, res, next) {
 
                 // * update data
                 await queries.connectionQuery(
-                        `
-                            UPDATE products SET 
-                            id_category = ?
-                            name = ?, 
-                            description = ?, 
-                            price = ?, 
-                            image_url = ?
-                            WHERE id = ?
-                        `, 
+                        `UPDATE products SET 
+                        id_category = ?,
+                        name = ?,   
+                        description = ?, 
+                        price = ?, 
+                        image_url = ?
+                        WHERE id = ?`, 
                         dataValidProduct, 
                         async function(err) {
                             // * handle failed query 
+                            
+                            // ! experimental
+                            // await queries.rollback();
+                           
                             if(err) {
-                                // * rollback
-                                // ! experimental
-                                queries.rollback();
-
-                                //! error handling (temporary) 
-                                return res.json({
-                                    error: 1,
-                                    message: err.sqlMessage,
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
                                 });
                             }
                 });
 
                 // * commit
                 // ! experimental
-                await queries.commit('COMMIT');
+                // await queries.commit('COMMIT');
             
                 // ! select data to find out the data entered by the user (temporarily)
                 await queries.connectionQuery(
-                    ` 
-                        SELECT * FROM products
-                        JOIN categories ON 
-                        (products.id_category 
-                        = 
-                        categories.id)
-                        JOIN tags_detail ON
-                        (JOIN tags ON (tag_detail.id_tag = tags.id))
-                        WHERE products.id = ?
-                    `,  
+                    `SELECT * FROM products
+                    WHERE id = ?`,  
                     dataValidProduct.pop(),
                     async function(err, rows) {
                         // * handle failed query 
                         if(err) {
-                           // * rollback
-                           // ! experimental
-                           queries.rollback();
-
-                           return res.json({
-                            error: 1,
-                            message: err.sqlMessage,
-                            });
+                            // * handle failed query 
+                            if(err) {
+                                // ! experimental
+                                // await queries.rollback();
+                           
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
                         } 
+                    
                         return res.json(rows);
                     });
-                });
+            });
 
             src.on("error", async (err) => {
                 next(err);
@@ -437,19 +399,6 @@ async function update(req, res, next) {
             });
         }
     }catch (err) {
-        /**
-        * ! The handler can't be used
-        * ! Need a decorator!!... 
-         */
-        // * check error type 
-        if(err && err.name === 'ValidationError'){
-            return res.json({
-                error: 1,
-                message: err.message,
-                fields: err.errors
-            });
-        }
-
         // * error handling by express 
         next(err);
     }
@@ -467,17 +416,17 @@ async function destroy(req, res, next) {
             `SELECT * FROM products WHERE id = ?`,
             Number(req.params.id),  
             async function(err, rows) {
-                // * handle failed query 
+                 // * handle failed query 
                 if(err) {
-                    // * rollback
                     // ! experimental
-                    queries.rollback();
-
-                    return res.json({
-                        error: 1,
-                        message: err.sqlMessage,
+                    // await queries.rollback();
+                           
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
                     });
-                } 
+                }
                 
                 if(rows.length > 0) {
                     // * absoulte path
@@ -492,15 +441,16 @@ async function destroy(req, res, next) {
                         `DELETE FROM products WHERE id = ?`, 
                         rows[0].id, 
                         async function(){
-                            if(err) {
-                               // * rollback
-                               queries.rollback();
-
-                               return res.json({
-                                error: 1,
-                                message: err.sqlMessage,
-                            });
-                            } 
+                                // ! experimental
+                                // await queries.rollback();
+                           
+                                if(err) {
+                                    // * debug
+                                    console.error({
+                                        sqlMessage: err.sqlMessage,
+                                        sql: err.sql 
+                                    });
+                                }
                         });
                 }
 
