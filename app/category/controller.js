@@ -1,6 +1,6 @@
 'use strict'
 
-const { categorySchema } = require('./model');
+const { validation } = require('./model/schema');
 const { dbConnection } = require('./../../database');
 
 async function store (req, res, next) {
@@ -11,20 +11,17 @@ async function store (req, res, next) {
         // ! START TRANSACTION
 
         // * check schema
-        try {
-            const category = await categorySchema.validateAsync(payload);
-        } catch (err) {
-            return res.json({
-                        error: 1,
-                        product: err._original, 
-                        details_error: {
-                            message: err.details[0].message
-                        }
-            });
-        }
-      
+        // * validation Category
+        const validCtegory = await validation(payload);
+
+        // * error validation
+        if(validCtegory.hasOwnProperty('error')) {
+            console.info('data')
+            return res.json(validCtegory);
+        }     
+
         // * konversion object to array
-        const validCategory = Object.keys(category).map((_) => category[_]);
+        const dataValidCategory = Object.keys(validCtegory).map((_) => validCtegory[_]);
 
         // * insert category
         await dbConnection.query( 
@@ -96,23 +93,17 @@ async function update (req, res, next) {
         });
 
         // * check schema
-        const category = await categorySchema.validateAsync(payload);
+        // * validation Category
+        const validCtegory = await validation(payload);
 
-        // * check schema
-        try {
-            const category = await categorySchema.validateAsync(payload);
-        } catch (err) {
-            return res.json({
-                        error: 1,
-                        product: err._original, 
-                        details_error: {
-                            message: err.details[0].message
-                        }
-            });
-        }
+        // * error validation
+        if(validCtegory.hasOwnProperty('error')) {
+            console.info('data')
+            return res.json(validCtegory);
+        }     
 
         // * konversion object to array
-        const validCategory = Object.keys(category).map((_) => category[_]);
+        const dataValidCategory = Object.keys(validCtegory).map((_) => validCtegory[_]);
 
         // * catch id user
         validCategory.push(Number(req.params.id));

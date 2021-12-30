@@ -1,40 +1,33 @@
 'use strict'
 
-const { tagSchema } = require('./model');
+const { validation } = require('./model/schema');
 const { dbConnection } = require('./../../database');
 
 async function store (req, res, next) {
     try {
         // * user request data 
         let payload = req.body;
-
         // ! START TRANSACTION
        
         // * check schema
         // ! REPAIR
-        // const tag = null;
+       
+        // * validation tag
+        const validTag = await validation(payload);
 
-        // try {
-        //      // * check schema
-        //     tag = await tagSchema.validateAsync(payload);
-        //     console.info(tag);
-        // } catch (err) {
-        //     return res.json({
-        //                 error: 1,
-        //                 product: err._original, 
-        //                 details_error: {
-        //                     message: err.details[0].message
-        //                 }
-        //     });
-        // }
+        // * error validation
+        if(validTag.hasOwnProperty('error')) {
+            console.error(validTag);
+            return res.json(validTag);
+        }     
 
         // * konversion object to array
-        const validTag = Object.keys(payload).map((_) => payload[_]);
-      
+        const dataValidTag = Object.keys(validTag).map((_) => validTag[_]);
+
         // * insert category
         await dbConnection.query( 
             `INSERT INTO tags (name) VALUES ?`,
-            [[validTag]], 
+            [[dataValidTag]], 
             async function(err, rows) {
                 // * handle failed query 
                 // * ROLLBACK
@@ -105,24 +98,17 @@ async function update (req, res, next) {
                     }
         });
 
-        // * check schema
-        const tag = await tagSchema.validateAsync(payload);
+         // * validation tag
+        const validTag = await validation(payload);
 
-        // * check schema
-        try {
-            const category = await categorySchema.validateAsync(payload);
-        } catch (err) {
-            return res.json({
-                        error: 1,
-                        product: err._original, 
-                        details_error: {
-                            message: err.details[0].message
-                        }
-            });
-        }
+        // * error validation
+        if(validTag.hasOwnProperty('error')) {
+            console.info('data')
+            return res.json(validTag);
+        }     
 
         // * konversion object to array
-        const validTag = Object.keys(tag).map((_) => tag[_]);
+        const dataValidTag = Object.keys(validTag).map((_) => validTag[_]);
 
         // * catch id user
         validTag.push(Number(req.params.id));

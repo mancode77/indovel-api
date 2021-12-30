@@ -53,13 +53,8 @@ async function store(req, res, next) {
 
                 // * error validation
                 if(validProduct.hasOwnProperty('error')) {
-                    return res.json({
-                                error: 1,
-                                product: err._original, 
-                                details_error: {
-                                    message: err.details[0].message
-                                }
-                            });
+                    console.info(validProduct);
+                    return res.json(validProduct);
                 }
 
                 // * convert to array
@@ -194,54 +189,55 @@ async function index(req, res, next) {
 
         // ! comming soon
 
-        //     //* filter keyword by category
-        //     if(category) {
-        //         await queries.connectionQuery(
-        //         queries.categoryFilter,
-        //         [category, Number(skip), Number(limit)],
-        //         async function(err, rows) {
-        //             // * handle failed query 
-        //             if(err) {
-        //                 // * rollback
-        //                 queries.rollback();
+            //* filter keyword by category
+           /* if(category) {
+                await queries.connectionQuery(
+                queries.categoryFilter,
+                [category, Number(skip), Number(limit)],
+                async function(err, rows) {
+                    // * handle failed query 
+                    if(err) {
+                        // * rollback
+                        queries.rollback();
 
-        //                 return res.json({
-        //                     error: 1,
-        //                     message: 'Kesalahan menginputkan data',
-        //                 });
-        //             } 
+                        return res.json({
+                            error: 1,
+                            message: 'Kesalahan menginputkan data',
+                        });
+                    } 
 
-        //              // * commit
-        //             // ! experimental
-        //             // await queries.commit('COMMIT');
+                     // * commit
+                    // ! experimental
+                    // await queries.commit('COMMIT');
                     
-        //              if(!req.query.hasOwnProperty('tags')) {
-        //                 return res.json(rows);
-        //             }
-        //         });
-        //     }
+                     if(!req.query.hasOwnProperty('tags')) {
+                        return res.json(rows);
+                    }
+                });
+            }
 
-        //     // * filter keyword by ta
-        //     if(tags) {
-        //         let [tag] = tags;
+            // * filter keyword by ta
+            if(tags) {
+                let [tag] = tags;
 
-        //         await queries.connectionQuery(
-        //         queries.tagFilter,
-        //         [tag, Number(skip), Number(limit)],
-        //         async function(err, rows) {
-        //             // * handle failed query 
-        //             if(err) {
-        //                 // * rollback
-        //                 queries.rollback();
-        //             } 
+                await queries.connectionQuery(
+                queries.tagFilter,
+                [tag, Number(skip), Number(limit)],
+                async function(err, rows) {
+                    // * handle failed query 
+                    if(err) {
+                        // * rollback
+                        queries.rollback();
+                    } 
 
-        //              // * commit
-        //             // ! experimental
-        //             // await queries.commit('COMMIT');
+                     // * commit
+                    // ! experimental
+                    // await queries.commit('COMMIT');
                     
-        //             return res.json(rows);
-        //         });
-        //     }
+                    return res.json(rows);
+                });
+            }
+            */
 
     }catch(err) {
          // * error handling by express 
@@ -321,13 +317,8 @@ async function update(req, res, next) {
                 
                 // * error validation
                 if(validProduct.hasOwnProperty('error')) {
-                    return res.json({
-                                error: 1,
-                                product: err._original, 
-                                details_error: {
-                                    message: err.details[0].message
-                                }
-                            });
+                    console.info(validProduct);
+                    return res.json(validProduct);
                 }
                 
                 // * convert to array
@@ -370,8 +361,7 @@ async function update(req, res, next) {
                     WHERE id = ?`,  
                     dataValidProduct.pop(),
                     async function(err, rows) {
-                        // * handle failed query 
-                        if(err) {
+                            // * handle failed query 
                             // * handle failed query 
                             if(err) {
                                 // ! experimental
@@ -382,7 +372,6 @@ async function update(req, res, next) {
                                     sqlMessage: err.sqlMessage,
                                     sql: err.sql 
                                 });
-                            }
                         } 
                     
                         return res.json(rows);
