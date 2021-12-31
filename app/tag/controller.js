@@ -7,11 +7,10 @@ async function store (req, res, next) {
     try {
         // * user request data 
         let payload = req.body;
+
         // ! START TRANSACTION
        
         // * check schema
-        // ! REPAIR
-       
         // * validation tag
         const validTag = await validation(payload);
 
@@ -30,12 +29,8 @@ async function store (req, res, next) {
             [[dataValidTag]], 
             async function(err, rows) {
                 // * handle failed query 
-                // * ROLLBACK
-                // ! EXPERIMENTAL
-                
                 if(err) {
                     // * ROLLBACK
-                    // ! EXPERIMENTAL
                         
                     // * debug
                     console.error({
@@ -47,7 +42,6 @@ async function store (req, res, next) {
             });
 
             // * COMMIT
-            // ! EXPERIMENTAL
         
             // ! select data to find out the data entered by the user (temporarily) 
             await dbConnection.query(
@@ -56,20 +50,27 @@ async function store (req, res, next) {
                      // * handle failed query 
                     if(err) {
                         // * ROLLBACK
-                        // ! EXPERIMENTAL
                         
                         // * debug
                        console.error({
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
+
+                        // ! response query failed
+                        return res.json({
+                            message: "server error"
+                        });
                     }
+
+                    // ! response query failed
+                        return res.json({
+                            message: "server error"
+                        });
 
                     return res.json(rows);
              });
     }catch (err) {
-        // * ERROR HANDLE VALIDATIONERROR
-
         // * error handling by express 
         next(err);
     }
@@ -98,29 +99,32 @@ async function update (req, res, next) {
                     }
         });
 
-         // * validation tag
+        // * check schema
+        // * validation tag
+
+        // ! UPDATE 1 DATA
         const validTag = await validation(payload);
+       
 
         // * error validation
         if(validTag.hasOwnProperty('error')) {
-            console.info('data')
+            console.error(validTag);
             return res.json(validTag);
         }     
-
+        
         // * konversion object to array
         const dataValidTag = Object.keys(validTag).map((_) => validTag[_]);
-
+         
         // * catch id user
-        validTag.push(Number(req.params.id));
-
+        dataValidTag.push(Number(req.params.id));
+        
         // * insert category
         await dbConnection.query( 
-            `UPDATE categories SET name = ? WHERE id = ?`,
-            validTag, 
+            `UPDATE tags SET name = ? WHERE id = ?`,
+            dataValidTag, 
             async function(err) {
                 // * handle failed query 
                 // * ROLLBACK
-                // ! EXPERIMENTAL
                 
                 if(err) {
                     // * ROLLBACK
@@ -131,32 +135,43 @@ async function update (req, res, next) {
                         sqlMessage: err.sqlMessage,
                         sql: err.sql 
                     });
+
                 }
             });
 
             // * COMMIT
-            // ! EXPERIMENTAL
         
             // ! select data to find out the data entered by the user (temporarily) 
             await dbConnection.query(
-                "SELECT * FROM tags ORDER BY id DESC LIMIT 1", 
-                  async function(err, rows) {
+                "SELECT * FROM tags WHERE id = ? ",
+                Number(req.params.id), 
+                async function(err, rows) {
                      // * handle failed query 
                     if(err) {
                         // * ROLLBACK
-                        // ! EXPERIMENTAL
                         
                         // * debug
                         console.error({
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
-                    } 
-                    return res.json(rows);
-             });
-    }catch (err) {
-        // * ERROR HANDLE VALIDATIONERROR
 
+                        // ! response query failed
+                        return res.json({
+                            message: "server error"
+                        });
+                    } 
+
+                    // * Data tidak ditemukan
+                    if(rows?.length < 1) {
+                        return res.json({
+                            message: `tag with id ${Number(req.params.id)} not found`
+                        });
+                    } 
+
+                    return res.json(rows);
+            });
+    }catch (err) {
         // * error handling by express 
         next(err);
     }
@@ -164,43 +179,49 @@ async function update (req, res, next) {
 
 async function destroy(req, res, next) {
     try {
-       // * start transaction
-       // ! EXPERIMENTAL
+       // ! START TRANSACTION
 
        // ! select data to find out the data entered by the user (temporarily) 
        await dbConnection.query(
-           //! Binding limit and skip
            `SELECT * FROM tags WHERE id = ?`,
            Number(req.params.id),  
            async function(err, rows) {
                // * handle failed query 
-               if(err) {
+                if(err) {
                     // * ROLLBACK
-                    // ! EXPERIMENTAL
-                    
+
                     // * debug
                     console.error({
                         sqlMessage: err.sqlMessage,
                         sql: err.sql 
                     });
-               } 
-               
-              
+                } 
+                    
+                // ! data tidak ditemukan
+                if(rows?.length < 1) {
+                    return res.json({
+                        message: `tag with id ${Number(req.params.id)} not found`
+                    });
+                } 
+
                 await dbConnection.query(
                        `DELETE FROM tags WHERE id = ?`, 
                        rows[0].id, 
                        async function(){
                            // * ROLLBACK
-                           // ! EXPERIMENTAL
                             
                            if(err) {
                                 // * ROLLBACK
-                                // ! EXPERIMENTAL
                                     
                                 // * debug
                                 console.error({
                                     sqlMessage: err.sqlMessage,
                                     sql: err.sql 
+                                });
+
+                                // ! response query failed
+                                return res.json({
+                                    message: "server error"
                                 });
                             }
                     });

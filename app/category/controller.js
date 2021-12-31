@@ -12,31 +12,34 @@ async function store (req, res, next) {
 
         // * check schema
         // * validation Category
-        const validCtegory = await validation(payload);
+        const validCategory = await validation(payload);
 
         // * error validation
-        if(validCtegory.hasOwnProperty('error')) {
-            console.info('data')
-            return res.json(validCtegory);
+        if(validCategory.hasOwnProperty('error')) {
+            console.info(validCategory);
+            return res.json(validCategory);
         }     
 
         // * konversion object to array
-        const dataValidCategory = Object.keys(validCtegory).map((_) => validCtegory[_]);
+        const dataValidCategory = Object.keys(validCategory).map((_) => validCategory[_]);
 
         // * insert category
         await dbConnection.query( 
             `INSERT INTO categories (name)VALUES ?`,
-            [[validCategory]], 
+            [[dataValidCategory]], 
             async function(err) {
             // * handle failed query 
-            // * ROLLBACK
-            // ! EXPERIMENTAL               
-                           
-            // * debug
-                console.error({
-                    sqlMessage: err.sqlMessage,
-                    sql: err.sql 
-                });
+            if(err) {
+                    // * ROLLBACK
+                    // ! EXPERIMENTAL
+                        
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
+                    });
+
+                }
             });
 
             // * COMMIT
@@ -56,6 +59,11 @@ async function store (req, res, next) {
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
+
+                        // ! response query failed
+                        return res.json({
+                            message: "server error"
+                        });
                     }
 
                     return res.json(rows);
@@ -68,6 +76,8 @@ async function store (req, res, next) {
     }
 }
 
+
+// ! KESALAHAN PADA DEBUG
 async function update (req, res, next) {
     try {
         // * user request data 
@@ -89,38 +99,42 @@ async function update (req, res, next) {
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
-                   } 
+                    } 
         });
 
         // * check schema
         // * validation Category
-        const validCtegory = await validation(payload);
+        const validCategory = await validation(payload);
 
         // * error validation
-        if(validCtegory.hasOwnProperty('error')) {
-            console.info('data')
-            return res.json(validCtegory);
+        if(validCategory.hasOwnProperty('error')) {
+            console.info(validCategory);
+            return res.json(validCategory);
         }     
 
         // * konversion object to array
-        const dataValidCategory = Object.keys(validCtegory).map((_) => validCtegory[_]);
+        const dataValidCategory = Object.keys(validCategory).map((_) => validCategory[_]);
 
         // * catch id user
-        validCategory.push(Number(req.params.id));
+        dataValidCategory.push(Number(req.params.id));
 
         // * insert category
         await dbConnection.query( 
             `UPDATE categories SET name = ? WHERE id = ?`,
-            validCategory, 
+            dataValidCategory, 
             async function(err) {
                 // * handle failed query
-                // ! EXPERIMENTAL
-                // * ROLLBACK
-                // * debug
-                console.error({
-                    sqlMessage: err.sqlMessage,
-                    sql: err.sql 
-                });
+               if(err) {
+                    // * ROLLBACK
+                    // ! EXPERIMENTAL
+                        
+                    // * debug
+                    console.error({
+                        sqlMessage: err.sqlMessage,
+                        sql: err.sql 
+                    });
+
+                }
             });
 
             // * COMMIT
@@ -128,8 +142,9 @@ async function update (req, res, next) {
         
             // ! select data to find out the data entered by the user (temporarily) 
             await dbConnection.query(
-                "SELECT * FROM categories ORDER BY id DESC LIMIT 1", 
-                  async function(err, rows) {
+                "SELECT * FROM categories WHERE id = ? ",
+                Number(req.params.id), 
+                async function(err, rows) {
                      // * handle failed query 
                     if(err) {
                         // * ROLLBACK
@@ -139,6 +154,19 @@ async function update (req, res, next) {
                         console.error({
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
+                        });
+
+                        // ! response query failed
+                        return res.json({
+                            message: "server error"
+                        });  
+                    } 
+
+                    // * Data tidak ditemukan
+                    if(rows?.length < 1) {
+                        console.info('Data tidak ditemukan')
+                        return res.json({
+                            message: `tag with id ${Number(req.params.id)} not found`
                         });
                     } 
 
@@ -152,6 +180,7 @@ async function update (req, res, next) {
     }
 }
 
+// ! KESALAHAN PADA DEBUG
 async function destroy(req, res, next) {
     try {
        // * start transaction
@@ -160,11 +189,11 @@ async function destroy(req, res, next) {
        // ! select data to find out the data entered by the user (temporarily) 
        await dbConnection.query(
            //! Binding limit and skip
-           `SELECT * FROM products WHERE id = ?`,
+           `SELECT * FROM categories WHERE id = ?`,
            Number(req.params.id),  
            async function(err, rows) {
-               // * handle failed query 
-               if(err) {
+                // * handle failed query 
+                if(err) {
                     // * ROLLBACK
                     // ! EXPERIMENTAL
                   
@@ -173,21 +202,36 @@ async function destroy(req, res, next) {
                         sqlMessage: err.sqlMessage,
                         sql: err.sql 
                     });
-               } 
+                } 
+
+                 // * Data tidak ditemukan
+                if(rows?.length < 1) {
+                    console.info('Data tidak ditemukan');
+                    return res.json({
+                            message: `tag with id ${Number(req.params.id)} not found`
+                    });
+                } 
                
-              
                 await dbConnection.query(
-                       `DELETE FROM products WHERE id = ?`, 
-                       rows[0].id, 
+                       `DELETE FROM categories WHERE id = ?`, 
+                       row[0].id, 
                        async function(){
-                            // * ROLLBACK
-                            // ! EXPERIMENTAL
-                            
-                            // * debug
-                            console.error({
-                                sqlMessage: err.sqlMessage,
-                                sql: err.sql 
-                            });
+                            if(err) {
+                                // * ROLLBACK
+                                // ! EXPERIMENTAL
+                                    
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+
+                                // ! response query failed
+                                return res.json({
+                                    message: "server error"
+                                });
+
+                            }
                     });
 
                return res.json(rows);

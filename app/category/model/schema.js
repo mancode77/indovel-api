@@ -13,11 +13,10 @@ const categorySchema = Joi.object({
 async function validation(payload) {
     try {
         // * check product structure
-        payload = {...payload}
-
+        payload = {...payload};
+       
         return await categorySchema.validateAsync(payload);
     } catch (err) {
-        console.info(err)
         return { 
             error: 1,
             tag: err._original, 

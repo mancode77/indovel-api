@@ -13,8 +13,9 @@ const tagSchema = Joi.object({
 async function validation(payload) {
     try {
         // * check product structure
-        payload = {...payload}
-
+        payload = {...payload};
+       
+        console.info(payload);
         return await tagSchema.validateAsync(payload);
     } catch (err) {
         return { 
