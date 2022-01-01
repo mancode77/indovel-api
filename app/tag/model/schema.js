@@ -15,7 +15,6 @@ async function validation(payload) {
         // * check product structure
         payload = {...payload};
        
-        console.info(payload);
         return await tagSchema.validateAsync(payload);
     } catch (err) {
         return { 
