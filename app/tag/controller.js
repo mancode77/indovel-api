@@ -23,7 +23,7 @@ async function store (req, res, next) {
         // * konversion object to array
         const dataValidTag = Object.keys(validTag).map((_) => validTag[_]);
 
-        // * insert category
+        // * insert tag
         await dbConnection.query( 
             `INSERT INTO tags (name) VALUES ?`,
             [[dataValidTag]], 
@@ -41,11 +41,15 @@ async function store (req, res, next) {
 
             });
 
-            // * COMMIT
-        
-            // ! select data to find out the data entered by the user (temporarily) 
-            await dbConnection.query(
-                "SELECT * FROM tags ORDER BY id DESC LIMIT 1", 
+        // * COMMIT
+
+        // ! select data to find out the data entered by the user (temporarily) 
+
+        // * variable for id product and tag
+        let ids = [];
+
+        await dbConnection.query(
+                "SELECT * FROM products ORDER BY id DESC LIMIT 1", 
                   async function(err, rows) {
                      // * handle failed query 
                     if(err) {
@@ -63,13 +67,46 @@ async function store (req, res, next) {
                         });
                     }
 
-                    // ! response query failed
-                        return res.json({
-                            message: "server error"
+                    ids.push(rows[0].id);
+                });
+        
+        // ! select data to find out the data entered by the user (temporarily) 
+        await dbConnection.query(
+                "SELECT * FROM tags ORDER BY id DESC LIMIT 1", 
+                  async function(err, rows) {
+                     // * handle failed query 
+                    if(err) {
+                        // * ROLLBACK
+                        
+                        // * debug
+                       console.error({
+                            sqlMessage: err.sqlMessage,
+                            sql: err.sql 
+                        });
+                    }
+
+                    ids.push(rows[0].id);
+
+                    // ! INSERT TAG
+                    await dbConnection.query( 
+                        `INSERT INTO tags_detail(id_product, id_tag) VALUES ?`,
+                        [[ids]], 
+                        async function(err, rows) {
+                            // * handle failed query 
+                            if(err) {
+                                // * ROLLBACK
+                                    
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
+
                         });
 
                     return res.json(rows);
-             });
+                });
     }catch (err) {
         // * error handling by express 
         next(err);
