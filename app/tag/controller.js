@@ -50,7 +50,7 @@ async function store (req, res, next) {
 
         await dbConnection.query(
                 "SELECT * FROM products ORDER BY id DESC LIMIT 1", 
-                  async function(err, rows) {
+                async function(err, rows) {
                      // * handle failed query 
                     if(err) {
                         // * ROLLBACK
