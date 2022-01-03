@@ -60,11 +60,6 @@ async function store (req, res, next) {
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
-
-                        // ! response query failed
-                        return res.json({
-                            message: "server error"
-                        });
                     }
 
                     ids.push(rows[0].id);
@@ -192,11 +187,6 @@ async function update (req, res, next) {
                             sqlMessage: err.sqlMessage,
                             sql: err.sql 
                         });
-
-                        // ! response query failed
-                        return res.json({
-                            message: "server error"
-                        });
                     } 
 
                     // * Data tidak ditemukan
@@ -254,11 +244,6 @@ async function destroy(req, res, next) {
                                 console.error({
                                     sqlMessage: err.sqlMessage,
                                     sql: err.sql 
-                                });
-
-                                // ! response query failed
-                                return res.json({
-                                    message: "server error"
                                 });
                             }
                     });
