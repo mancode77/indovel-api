@@ -232,6 +232,23 @@ async function destroy(req, res, next) {
                 } 
 
                 await dbConnection.query(
+                       `DELETE FROM tags_detail WHERE id_tag = ?`, 
+                       rows[0].id, 
+                       async function(){
+                           // * ROLLBACK
+                            
+                           if(err) {
+                                // * ROLLBACK
+                                    
+                                // * debug
+                                console.error({
+                                    sqlMessage: err.sqlMessage,
+                                    sql: err.sql 
+                                });
+                            }
+                    });
+
+                await dbConnection.query(
                        `DELETE FROM tags WHERE id = ?`, 
                        rows[0].id, 
                        async function(){

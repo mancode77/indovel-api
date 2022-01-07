@@ -5,6 +5,7 @@ const path = require('path');
 const { Queries } = require('./model/queries');
 const { validation } = require('./model/schema');
 const config = require('./../config');
+const { dbConnection } = require('../../database');
 
 // * instance object query sql
 let queries = new Queries();
@@ -397,7 +398,7 @@ async function destroy(req, res, next) {
      try {
         // * start transaction
         // ! experimental
-        await queries.transaction('START TRANSACTION');
+        // await queries.transaction('START TRANSACTION');
 
         // ! select data to find out the data entered by the user (temporarily) 
         await queries.connectionQuery(
@@ -416,7 +417,7 @@ async function destroy(req, res, next) {
                         sql: err.sql 
                     });
                 }
-                
+
                 if(rows.length > 0) {
                     // * absoulte path
                     let currentImage = `${config.rootPath}/public/upload/${rows[0].image_url}`;
@@ -425,6 +426,41 @@ async function destroy(req, res, next) {
                     if(fs.existsSync(currentImage)) {
                         fs.unlinkSync(currentImage);
                     }   
+
+                    await queries.connectionQuery(
+                        `SELECT * FROM tags_detail WHERE id_product = ?`,
+                        rows[0].id,
+                           async function(err, rows){
+                               console.info(rows);
+                                // ! experimental
+                                // await queries.rollback();
+                           
+                                if(err) {
+                                    // * debug
+                                    console.error({
+                                        sqlMessage: err.sqlMessage,
+                                        sql: err.sql 
+                                    });
+                                }
+
+                                await queries.connectionQuery(
+                                    `UPDATE tags_detail SET id_product = NULL WHERE id_product = ?`, 
+                                    rows[0].id_product, 
+                                    async function(){
+                                    // ! experimental
+                                    // await queries.rollback();
+                            
+                                    if(err) {
+                                        // * debug
+                                        console.error({
+                                            sqlMessage: err.sqlMessage,
+                                            sql: err.sql 
+                                        });
+                                    }
+                        });
+
+                        
+                     });
 
                     await queries.connectionQuery(
                         `DELETE FROM products WHERE id = ?`, 
@@ -445,7 +481,7 @@ async function destroy(req, res, next) {
 
                 // * commit
                 // ! experimental
-                await queries.commit('COMMIT');
+                // await queries.commit('COMMIT');
 
                 return res.json(rows);
             });

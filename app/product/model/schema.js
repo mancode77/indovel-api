@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const productSchema = Joi.object({
     id_category: Joi.number()
-    .max(11)
+    .max(1000)
     .required(),
 
     name: Joi.string()

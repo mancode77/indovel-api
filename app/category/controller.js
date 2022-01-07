@@ -204,7 +204,7 @@ async function destroy(req, res, next) {
                
                 await dbConnection.query(
                        `DELETE FROM categories WHERE id = ?`, 
-                       row[0].id, 
+                       rows[0].id, 
                        async function(){
                             if(err) {
                                 // * ROLLBACK
