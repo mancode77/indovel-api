@@ -1,6 +1,6 @@
 'use strict'
 
-const { dbConnection } = require('./../../../database');
+const { dbConnection } = require('../../../../database');
 
 // ! ideally use decorative...!!!
 
@@ -23,13 +23,11 @@ function Queries() {
                 tags.name AS tag_name,
                 tags.created_at AS tag_created_at,
                 tags.updated_at AS tag_updated_at
-                FROM tags 
-                JOIN tags_detail 
-                ON (tags_detail.id_tag = tags.id) 
-                JOIN products 
-                ON (tags_detail.id_product = products.id) 
+                FROM products 
                 JOIN categories 
-                ON (categories.id = products.id_category)
+                ON (products.id_category = categories.id) 
+                JOIN tags 
+                ON (products.id_tag = tags.id) 
                 ORDER BY products.id DESC LIMIT ?, ?`;
 
 	this.productFilter =  
@@ -49,19 +47,17 @@ function Queries() {
                 tags.name AS tag_name,
                 tags.created_at AS tag_created_at,
                 tags.updated_at AS tag_updated_at
-                FROM tags 
-                JOIN tags_detail 
-                ON (tags_detail.id_tag = tags.id) 
-                JOIN products 
-                ON (tags_detail.id_product = products.id) 
+                FROM products 
                 JOIN categories 
-                ON (categories.id = products.id_category)
+                ON (products.id_category = categories.id) 
+                JOIN tags 
+                ON (products.id_tag = tags.id) 
                 WHERE MATCH(products.name)
                 AGAINST (? IN NATURAL LANGUAGE MODE)
                 ORDER BY products.id DESC LIMIT ?, ?`;
 
 	// ! comming soon
-    /*
+    
 	this.categoryFilter =  
 				`SELECT
                 categories.id AS category_id,
@@ -79,13 +75,11 @@ function Queries() {
                 tags.name AS tag_name,
                 tags.created_at AS tag_created_at,
                 tags.updated_at AS tag_updated_at
-                FROM tags 
-                JOIN tags_detail 
-                ON (tags_detail.id_tag = tags.id) 
-                JOIN products 
-                ON (tags_detail.id_product = products.id) 
+                FROM products 
                 JOIN categories 
-                ON (categories.id = products.id_category)
+                ON (products.id_category = categories.id) 
+                JOIN tags 
+                ON (products.id_tag = tags.id) 
                 WHERE MATCH(categories.name)
                 AGAINST (? IN NATURAL LANGUAGE MODE)
                 ORDER BY products.id DESC LIMIT ?, ?`;
@@ -107,17 +101,15 @@ function Queries() {
                 tags.name AS tag_name,
                 tags.created_at AS tag_created_at,
                 tags.updated_at AS tag_updated_at
-                FROM tags 
-                JOIN tags_detail 
-                ON (tags_detail.id_tag = tags.id) 
-                JOIN products 
-                ON (tags_detail.id_product = products.id) 
+                FROM products 
                 JOIN categories 
-                ON (categories.id = id_category)
+                ON (products.id_category = categories.id) 
+                JOIN tags 
+                ON (products.id_tag = tags.id) 
                 WHERE MATCH(tags.name)
                 AGAINST (? IN NATURAL LANGUAGE MODE)
                 ORDER BY products.id DESC LIMIT ?, ?`;
-    */
+    
 
 	// ! experimental
 	this.transaction = async function(query) {

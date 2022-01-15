@@ -1,8 +1,8 @@
 'use strict'
 
 const http = require('http');
-const app = require('./../app');
-const { dbConnection } = require('./../database');
+const app = require('../../app');
+const { dbConnection } = require('../../database');
 const debug = require('debug')('indovel:server');
 
 const port = normalizePort(process.env.PORT || '3000');

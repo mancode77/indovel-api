@@ -1,7 +1,7 @@
 'use strict'
 
 const mysql = require('mysql');
-const {dbHost, dbName, dbPort, dbUser, dbPass} = require('./../app/config');
+const {dbHost, dbName, dbPort, dbUser, dbPass} = require('../app/config');
 
 var dbConnection = mysql.createConnection({
     host     : dbHost,
