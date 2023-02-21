@@ -1,0 +1,248 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Indovel RESTful API",
+        "description": "OpenAPI for Indovel RESTful API",
+        "contact": {
+            "name": "Aji Maulana",
+            "email": "mancode700@gmail.com"
+        },
+        "license": {
+            "name": "APACHE 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+        }
+    },
+    "servers": [
+        {
+            "description": "Indovel RESTful API Server",
+            "url": "https://{environment}.indovel.com/api",
+            "variables": {
+                "environment": {
+                    "description": "Server Environment",
+                    "default": "dev",
+                    "enum": [
+                        "dev",
+                        "prod"
+                    ]
+                }
+            }
+        }
+    ],
+    "paths": {
+        "/products": {
+            "post": {
+                "security": [
+                    {
+                        "IndovelAuth": []
+                    }
+                ],
+                "tags": [
+                    "Indovel"
+                ],
+                "summary": "Create new product",
+                "description": "Create new product to database",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestCreateOrUpdateProduct"
+                            },
+                            "examples": {
+                                "The Shining": {
+                                    "description": "Example create product The Shining",
+                                    "value": {
+                                        "name": "The Shining",
+                                        "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                        "price": 150000,
+                                        "image_url": "KAMjnajse34JAL.png"
+                                    }
+                                },
+                                "Laskar Pelangi": {
+                                    "desciption": "Example create product Laskar Pelangi",
+                                    "value": {
+                                        "name": "Laskar Pelangi",
+                                        "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                        "price": 89000,
+                                        "image_url": "JAkjnajs934kas.png"
+                                    }
+                                },
+                                "Alphabet Characters Are Too Short": {
+                                    "description": "Example failed to create product because the alpbet character in the name column is To Short",
+                                    "value": {
+                                        "name": "It",
+                                        "desciption": "Mereka adalah tujuh remaja ketika mereka pertama kali menemukan kengerian itu. Sekarang mereka adalah pria dan wanita dewasa yang telah pergi ke dunia besar untuk mendapatkan kesuksesan dan kebahagiaan. Tapi tidak satupun dari mereka yang bisa menahan kekuatan yang telah menarik mereka kembali ke Derry untuk menghadapi mimpi buruk tanpa akhir, dan kejahatan tanpa nama.",
+                                        "price": 100000,
+                                        "image_url": "849jnajsKALkas.png"
+                                    }
+                                },
+                                "Empty Input Field": {
+                                    "description": "Example failed to create product because the name input field Is Empty",
+                                    "value": {
+                                        "name": "",
+                                        "desciption": "It’s a small city, a place as hauntingly familiar as your own hometown. Only in Derry the haunting is real",
+                                        "price": 90000,
+                                        "image_url": "we9jKJNsKALkas.png"
+                                    }
+                                },
+                                "All Input Fields Do Not Match The Data Type": {
+                                    "description": "Example failed to create product because All Input Fields Do Not Match The Data Type",
+                                    "value": {
+                                        "name": 78000,
+                                        "desciption": 1,
+                                        "price": "Black Hole",
+                                        "image_url": "image.zip"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success create product",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                },
+                                "examples": {
+                                    "The Shining": {
+                                        "description": "Success create product The Shining",
+                                        "value": {
+                                            "took": 200,
+                                            "status": "OK",
+                                            "data": {
+                                                "name": "The Shining",
+                                                "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                "price": 150000,
+                                                "image_url": "KAMjnajse34JAL.png"
+                                            },
+                                            "errors": null
+                                        }
+                                    },
+                                    "Laskar Pelangi": {
+                                        "description": "Success create product Laskar Pelangi",
+                                        "value": {
+                                            "took": 200,
+                                            "status": "OK",
+                                            "data": {
+                                                "name": "Laskar Pelangi",
+                                                "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                "price": 89000,
+                                                "image_url": "JAkjnajs934kas.png"
+                                            },
+                                            "errors": null
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "631": {
+                        "desciption": "Failed to create product because the alpbet character in the name column is To Short",
+                        "content": {
+                            "application/json": {
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "IndovelAuth": {
+                "description": "Authentication for Indovel RESTful API",
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key"
+            }
+        },
+        "schemas": {
+            "RequestCreateOrUpdateProduct": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 3,
+                        "required": [
+                            "name"
+                        ]
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 1000
+                    },
+                    "price": {
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "image_url": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResponseCreateOrUpdateProduct": {
+                "type": "object",
+                "properties": {
+                    "took": {
+                        "type": "integer",
+                        "minLength": 3,
+                        "maxLength": 3,
+                        "required": [
+                            "took"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "required": [
+                            "status"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "data"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 3,
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "description": {
+                                "type": "string",
+                                "maxLength": 1000
+                            },
+                            "price": {
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "image_url": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "errors": {
+                        "type": "object",
+                        "required": [
+                            "errors"
+                        ],
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "required": [
+                                    "message"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
