@@ -59,7 +59,7 @@
                                     }
                                 },
                                 "Laskar Pelangi": {
-                                    "desciption": "Example create product Laskar Pelangi",
+                                    "description": "Example create product Laskar Pelangi",
                                     "value": {
                                         "name": "Laskar Pelangi",
                                         "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
@@ -139,11 +139,71 @@
                             }
                         }
                     },
-                    "631": {
-                        "desciption": "Failed to create product because the alpbet character in the name column is To Short",
+                    "401": {
+                        "description": "Failed to create product because the alpbet character in the name column is To Short",
                         "content": {
                             "application/json": {
-                                
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                },
+                                "examples": {
+                                    "Alphabet Characters Are Too Short": {
+                                        "description": "Failed to create product because the alpbet character in the name column is To Short",
+                                        "value": {
+                                            "took": 401,
+                                            "status": "ValidationError",
+                                            "data": null,
+                                            "errors": {
+                                                "name": "Short alphabet characters, input at least 3 alphabetic characters"
+                                            }
+                                        }
+                                    },
+                                    "Empty Input Field": {
+                                        "description": "Failed to create product because the name input field Is Empty",
+                                        "value": {
+                                            "took": 401,
+                                            "status": "ValidationError",
+                                            "data": null,
+                                            "errors": {
+                                                "name": "Input field cannot be empty"
+                                            }
+                                        }
+                                    },
+                                    "All Input Fields Do Not Match The Data Type": {
+                                        "description": "Failed to create product because All Input Fields Do Not Match The Data Type",
+                                        "value": {
+                                            "took": 401,
+                                            "status": "ValidationError",
+                                            "data": null,
+                                            "errors": {
+                                                "name": "Input fields do not match"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server has encountered an error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                },
+                                "examples": {
+                                    "Server Error": {
+                                        "description": "The server is crashing",
+                                        "value": {
+                                            "took": 500,
+                                            "status": "ServerError",
+                                            "data": null,
+                                            "errors": {
+                                                "message": "The server is crashing"
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -233,11 +293,26 @@
                             "errors"
                         ],
                         "properties": {
-                            "message": {
+                            "name": {
                                 "type": "string",
+                                "minLength": 3,
                                 "required": [
-                                    "message"
+                                    "name"
                                 ]
+                            },
+                            "description": {
+                                "type": "string",
+                                "maxLength": 1000
+                            },
+                            "price": {
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "image_url": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
                             }
                         }
                     }
