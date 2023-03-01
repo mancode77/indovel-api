@@ -30,6 +30,629 @@
     ],
     "paths": {
         "/products": {
+            "get": {
+                "security": [
+                    {
+                        "IndovelAuth": []
+                    }
+                ],
+                "tags": [
+                    "Indovel"
+                ],
+                "summary": "Get product by query parameters",
+                "description": "get by query parameters available product",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search for products by category",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "default": true
+                        },
+                        "examples": {
+                            "Horor": {
+                                "description": "Example category horor",
+                                "value": "Horor"
+                            },
+                            "Inspiratif": {
+                                "description": "Example category Inspiratif",
+                                "value": "Inspiratif"
+                            }
+                        }
+                    },
+                    {
+                        "name": "rating",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search for products by rating",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "default": true
+                        },
+                        "examples": {
+                            "5.0": {
+                                "description": "Example rating 5.0",
+                                "value": "5.0"
+                            },
+                            "4.5": {
+                                "description": "Example category 4.5",
+                                "value": "4.5"
+                            }
+                        }
+                    },
+                    {
+                        "name": "bookCondition",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search for products by book condition",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "default": true
+                        }
+                    },
+                    {
+                        "name": "preOrder",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search for products by pre order",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "default": true
+                        }
+                    },
+                    {
+                        "name": "stock",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search for products by stock",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "default": true
+                        },
+                        "examples": {
+                            "1000": {
+                                "description": "Example 1000 stock",
+                                "value": 1000
+                            },
+                            "10000": {
+                                "description": "Example 10000 stock",
+                                "value": 10000
+                            }
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "description": "Displays multiple products with a certain limit",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "default": true
+                        },
+                        "examples": {
+                            "10": {
+                                "description": "Example limit 10",
+                                "value": 10
+                            },
+                            "20": {
+                                "description": "Example limit 7",
+                                "value": 7
+                            }
+                        }
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "required": false,
+                        "description": "Limits in displaying products",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "default": true
+                        },
+                        "examples": {
+                            "10": {
+                                "description": "Example skip 10",
+                                "value": 10
+                            },
+                            "5": {
+                                "description": "Example skip 5",
+                                "value": 5
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success get product by query parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponsePath"
+                                },
+                                "examples": {
+                                    "Response product if the product is filtered based on the default value of all query paramters": {
+                                        "description": "Example success get product by default query parameters",
+                                        "value": {
+                                            "took": 200,
+                                            "status": "OK",
+                                            "data": [
+                                                {
+                                                    "id": "5690f0b6a7d9167650e9854792883039",
+                                                    "title": "The Shining",
+                                                    "rating": 3.4,
+                                                    "price": 150000,
+                                                    "reviews": 14000,
+                                                    "language": "Indonesia",
+                                                    "sendFrom": "Bogor",
+                                                    "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                    "sold": 2,
+                                                    "quantity": 100,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                                        "name": "Horor"
+                                                    },
+                                                    "genre": {
+                                                        "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                        "name": "Horor"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "image": "389jnajse34JAL.png",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse34JAL.PNG",
+                                                        "mwBnajse34JAL.PNG",
+                                                        "rtCnajse34JAL.PNG",
+                                                        "hjDnajse34JAL.PNG",
+                                                        "weEnajse34JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                    "title": "Laskar Pelangi",
+                                                    "rating": 5.0,
+                                                    "price": 89000,
+                                                    "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                    "sold": 7500,
+                                                    "quantity": 10000,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "d27b37dac7b687c8dfe646f2ab5aca9b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "genre": {
+                                                        "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse45JAL.PNG",
+                                                        "mwBnajseweJAL.PNG",
+                                                        "rtCnajse56JAL.PNG",
+                                                        "hjDnajsereJAL.PNG",
+                                                        "weEnajse67JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5690f0b6a7d9167650e9854792883039",
+                                                    "title": "The Shining",
+                                                    "rating": 3.4,
+                                                    "price": 150000,
+                                                    "reviews": 14000,
+                                                    "language": "Indonesia",
+                                                    "sendFrom": "Bogor",
+                                                    "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                    "sold": 2,
+                                                    "quantity": 100,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                                        "name": "Horor"
+                                                    },
+                                                    "genre": {
+                                                        "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                        "name": "Horor"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "image": "389jnajse34JAL.png",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse34JAL.PNG",
+                                                        "mwBnajse34JAL.PNG",
+                                                        "rtCnajse34JAL.PNG",
+                                                        "hjDnajse34JAL.PNG",
+                                                        "weEnajse34JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                    "title": "Laskar Pelangi",
+                                                    "rating": 5.0,
+                                                    "price": 89000,
+                                                    "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                    "sold": 7500,
+                                                    "quantity": 10000,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "d27b37dac7b687c8dfe646f2ab5aca9b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "genre": {
+                                                        "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse45JAL.PNG",
+                                                        "mwBnajseweJAL.PNG",
+                                                        "rtCnajse56JAL.PNG",
+                                                        "hjDnajsereJAL.PNG",
+                                                        "weEnajse67JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5690f0b6a7d9167650e9854792883039",
+                                                    "title": "The Shining",
+                                                    "rating": 3.4,
+                                                    "price": 150000,
+                                                    "reviews": 14000,
+                                                    "language": "Indonesia",
+                                                    "sendFrom": "Bogor",
+                                                    "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                    "sold": 2,
+                                                    "quantity": 100,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "d27b37dac7b687c8dfe646f2ab5aca9b",
+                                                        "name": "Horor"
+                                                    },
+                                                    "genre": {
+                                                        "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                        "name": "Horor"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "image": "389jnajse34JAL.png",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse34JAL.PNG",
+                                                        "mwBnajse34JAL.PNG",
+                                                        "rtCnajse34JAL.PNG",
+                                                        "hjDnajse34JAL.PNG",
+                                                        "weEnajse34JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                    "title": "Laskar Pelangi",
+                                                    "rating": 5.0,
+                                                    "price": 89000,
+                                                    "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                    "sold": 7500,
+                                                    "quantity": 10000,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "492e0cf2caf959996173adc679874019",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "genre": {
+                                                        "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse45JAL.PNG",
+                                                        "mwBnajseweJAL.PNG",
+                                                        "rtCnajse56JAL.PNG",
+                                                        "hjDnajsereJAL.PNG",
+                                                        "weEnajse67JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5690f0b6a7d9167650e9854792883039",
+                                                    "title": "The Shining",
+                                                    "rating": 3.4,
+                                                    "price": 150000,
+                                                    "reviews": 14000,
+                                                    "language": "Indonesia",
+                                                    "sendFrom": "Bogor",
+                                                    "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                    "sold": 2,
+                                                    "quantity": 100,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "d27b37dac7b687c8dfe646f2ab5aca9b",
+                                                        "name": "Horor"
+                                                    },
+                                                    "genre": {
+                                                        "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                        "name": "Horor"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "image": "389jnajse34JAL.png",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse34JAL.PNG",
+                                                        "mwBnajse34JAL.PNG",
+                                                        "rtCnajse34JAL.PNG",
+                                                        "hjDnajse34JAL.PNG",
+                                                        "weEnajse34JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                    "title": "Laskar Pelangi",
+                                                    "rating": 5.0,
+                                                    "price": 89000,
+                                                    "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                    "sold": 7500,
+                                                    "quantity": 10000,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "492e0cf2caf959996173adc679874019",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "genre": {
+                                                        "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse45JAL.PNG",
+                                                        "mwBnajseweJAL.PNG",
+                                                        "rtCnajse56JAL.PNG",
+                                                        "hjDnajsereJAL.PNG",
+                                                        "weEnajse67JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5690f0b6a7d9167650e9854792883039",
+                                                    "title": "The Shining",
+                                                    "rating": 3.4,
+                                                    "price": 150000,
+                                                    "reviews": 14000,
+                                                    "language": "Indonesia",
+                                                    "sendFrom": "Bogor",
+                                                    "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                    "sold": 2,
+                                                    "quantity": 100,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "d27b37dac7b687c8dfe646f2ab5aca9b",
+                                                        "name": "Horor"
+                                                    },
+                                                    "genre": {
+                                                        "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                        "name": "Horor"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "image": "389jnajse34JAL.png",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse34JAL.PNG",
+                                                        "mwBnajse34JAL.PNG",
+                                                        "rtCnajse34JAL.PNG",
+                                                        "hjDnajse34JAL.PNG",
+                                                        "weEnajse34JAL.PNG"
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                    "title": "Laskar Pelangi",
+                                                    "rating": 5.0,
+                                                    "price": 89000,
+                                                    "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                    "sold": 7500,
+                                                    "quantity": 10000,
+                                                    "bookCondition": "Original",
+                                                    "bookWeight": {
+                                                        "numberWeight": 3.59,
+                                                        "unitWeight": "kg"
+                                                    },
+                                                    "category": {
+                                                        "id": "492e0cf2caf959996173adc679874019",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "genre": {
+                                                        "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                        "name": "Inspiratif"
+                                                    },
+                                                    "seller": {
+                                                        "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                        "name": "Jusuf Irfan",
+                                                        "gender": "Laki-laki",
+                                                        "dateOfBirth": {
+                                                            "date": 28,
+                                                            "month": 2,
+                                                            "year": 1999
+                                                        },
+                                                        "email": "JusufIrfan@gmail.com",
+                                                        "phoneNumber": "081678239273"
+                                                    },
+                                                    "images": [
+                                                        "lkAnajse45JAL.PNG",
+                                                        "mwBnajseweJAL.PNG",
+                                                        "rtCnajse56JAL.PNG",
+                                                        "hjDnajsereJAL.PNG",
+                                                        "weEnajse67JAL.PNG"
+                                                    ]
+                                                }
+                                            ],
+                                            "dataLength": 10,
+                                            "errors": {}
+                                        }
+                                    },
+                                    "Response data if the data is filtered based on Horor category": {
+                                        "$ref": "#/components/examples/response-product-if-product-filtered-by-category-horor"
+                                    },
+                                    "success filter by rating": {}
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server has encountered an error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponsePath"
+                                },
+                                "examples": {
+                                    "Server Error": {
+                                        "description": "The server is crashing",
+                                        "value": {
+                                            "took": 500,
+                                            "status": "ServerError",
+                                            "data": null,
+                                            "errors": {
+                                                "message": "The server is crashing"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -104,7 +727,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                    "$ref": "#/components/schemas/ProductResponsePath"
                                 },
                                 "examples": {
                                     "The Shining": {
@@ -113,11 +736,51 @@
                                             "took": 200,
                                             "status": "OK",
                                             "data": {
-                                                "name": "The Shining",
-                                                "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                "id": "5690f0b6a7d9167650e9854792883039",
+                                                "title": "The Shining",
+                                                "rating": 3.4,
                                                 "price": 150000,
-                                                "image_url": "KAMjnajse34JAL.png"
+                                                "reviews": 14000,
+                                                "language": "Indonesia",
+                                                "sendFrom": "Bogor",
+                                                "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                                                "sold": 2,
+                                                "quantity": 100,
+                                                "bookCondition": "Original",
+                                                "bookWeight": {
+                                                    "numberWeight": 3.59,
+                                                    "unitWeight": "kg"
+                                                },
+                                                "category": {
+                                                    "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                                    "name": "Horor"
+                                                },
+                                                "genre": {
+                                                    "id": "01e64cb0a7902678956d45f23a48efbf",
+                                                    "name": "Horor"
+                                                },
+                                                "seller": {
+                                                    "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                    "name": "Jusuf Irfan",
+                                                    "image": "389jnajse34JAL.png",
+                                                    "gender": "Laki-laki",
+                                                    "dateOfBirth": {
+                                                        "date": 28,
+                                                        "month": 2,
+                                                        "year": 1999
+                                                    },
+                                                    "email": "JusufIrfan@gmail.com",
+                                                    "phoneNumber": "081678239273"
+                                                },
+                                                "images": [
+                                                    "lkAnajse34JAL.PNG",
+                                                    "mwBnajse34JAL.PNG",
+                                                    "rtCnajse34JAL.PNG",
+                                                    "hjDnajse34JAL.PNG",
+                                                    "weEnajse34JAL.PNG"
+                                                ]
                                             },
+                                            "dataLength": 1,
                                             "errors": null
                                         }
                                     },
@@ -127,11 +790,47 @@
                                             "took": 200,
                                             "status": "OK",
                                             "data": {
-                                                "name": "Laskar Pelangi",
-                                                "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                "id": "0f04813e9f4c896c8edea01c0ea65582",
+                                                "title": "Laskar Pelangi",
+                                                "rating": 5.0,
                                                 "price": 89000,
-                                                "image_url": "JAkjnajs934kas.png"
+                                                "description": "Novel ini bercerita kehidupan kanak-kanak beberapa bocah di Belitong. Andrea Hirata memulainya dengan kisah miris dunia pendidikan di Indonesia dimana sebuah sekolah yang kekurangan murid hendak ditutup.",
+                                                "sold": 7500,
+                                                "quantity": 10000,
+                                                "bookCondition": "Original",
+                                                "bookWeight": {
+                                                    "numberWeight": 3.59,
+                                                    "unitWeight": "kg"
+                                                },
+                                                "category": {
+                                                    "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                                    "name": "Inspiratif"
+                                                },
+                                                "genre": {
+                                                    "id": "088d498ac5e15d39781f2bf28177bc5b",
+                                                    "name": "Inspiratif"
+                                                },
+                                                "seller": {
+                                                    "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                                    "name": "Jusuf Irfan",
+                                                    "gender": "Laki-laki",
+                                                    "dateOfBirth": {
+                                                        "date": 28,
+                                                        "month": 2,
+                                                        "year": 1999
+                                                    },
+                                                    "email": "JusufIrfan@gmail.com",
+                                                    "phoneNumber": "081678239273"
+                                                },
+                                                "images": [
+                                                    "lkAnajse45JAL.PNG",
+                                                    "mwBnajseweJAL.PNG",
+                                                    "rtCnajse56JAL.PNG",
+                                                    "hjDnajsereJAL.PNG",
+                                                    "weEnajse67JAL.PNG"
+                                                ]
                                             },
+                                            "dataLength": 1,
                                             "errors": null
                                         }
                                     }
@@ -144,7 +843,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                    "$ref": "#/components/schemas/ProductResponsePath"
                                 },
                                 "examples": {
                                     "Alphabet Characters Are Too Short": {
@@ -189,7 +888,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ResponseCreateOrUpdateProduct"
+                                    "$ref": "#/components/schemas/ProductResponsePath"
                                 },
                                 "examples": {
                                     "Server Error": {
@@ -209,6 +908,25 @@
                     }
                 }
             }
+        },
+        "/products/{productId}": {
+            "put": {
+                "security": [
+                    {
+                        "IndovelAuth": []
+                    }
+                ],
+                "tags": [
+                    "Indovel"
+                ],
+                "summary": "Update existing product",
+                "description": "Update existing product in database",
+                "parameters": [
+                    {
+                        "$ref": "#components/parameters/ProductId"
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -218,6 +936,27 @@
                 "type": "apiKey",
                 "in": "header",
                 "name": "X-API-Key"
+            }
+        },
+        "parameters": {
+            "ProductId": {
+                "name": "productId",
+                "in": "path",
+                "required": true,
+                "description": "Product id for updated or delete",
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "The Shining": {
+                        "description": "Sample product id for The Shining",
+                        "value": "5690f0b6a7d9167650e9854792883039"
+                    },
+                    "Laskar Pelangi": {
+                        "description": "Sample product id for Laskar Pelangi",
+                        "value": "0f04813e9f4c896c8edea01c0ea65582"
+                    }
+                }
             }
         },
         "schemas": {
@@ -244,78 +983,689 @@
                     }
                 }
             },
-            "ResponseCreateOrUpdateProduct": {
+            "ProductResponsePath": {
                 "type": "object",
                 "properties": {
                     "took": {
                         "type": "integer",
-                        "minLength": 3,
-                        "maxLength": 3,
                         "required": [
                             "took"
-                        ]
+                        ],
+                        "minLength": 3,
+                        "maxLength": 3
                     },
                     "status": {
                         "type": "string",
                         "required": [
                             "status"
-                        ]
+                        ],
+                        "minLength": 2
                     },
                     "data": {
-                        "type": "object",
+                        "type": "array",
                         "required": [
                             "data"
                         ],
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "minLength": 3,
-                                "required": [
-                                    "name"
-                                ]
-                            },
-                            "description": {
-                                "type": "string",
-                                "maxLength": 1000
-                            },
-                            "price": {
-                                "type": "integer",
-                                "default": 0
-                            },
-                            "image_url": {
-                                "type": "string"
-                            }
+                        "items": {
+
                         }
                     },
-                    "errors": {
-                        "type": "object",
+                    "id": {
+                        "type": "string",
                         "required": [
-                            "errors"
+                            "id"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "required": [
+                            "title"
                         ],
+                        "minLength": 3
+                    },
+                    "rating": {
+                        "type": "number",
+                        "required": [
+                            "rating"
+                        ]
+                    },
+                    "reviews": {
+                        "type": "integer",
+                        "required": [
+                            "reviews"
+                        ]
+                    },
+                    "language": {
+                        "type": "string",
+                        "required": [
+                            "language"
+                        ]
+                    },
+                    "sendFrom": {
+                        "type": "string",
+                        "required": [
+                            "sendFrom"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 1000
+                    },
+                    "sold": {
+                        "type": "integer",
+                        "required": [
+                            "sold"
+                        ]
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "required": [
+                            "sold"
+                        ]
+                    },
+                    "bookCondition": {
+                        "type": "string",
+                        "required": [
+                            "bookCondition"
+                        ]
+                    },
+                    "bookWeight": {
+                        "type": "object",
                         "properties": {
-                            "name": {
-                                "type": "string",
-                                "minLength": 3,
+                            "numberWeight": {
+                                "type": "number",
                                 "required": [
-                                    "name"
+                                    "numberWeight"
                                 ]
                             },
-                            "description": {
+                            "unitWeight": {
                                 "type": "string",
-                                "maxLength": 1000
-                            },
-                            "price": {
-                                "type": "integer",
-                                "default": 0
-                            },
-                            "image_url": {
-                                "type": "string"
-                            },
-                            "message": {
-                                "type": "string"
+                                "required": [
+                                    "unitWeight"
+                                ]
                             }
-                        }
+                        },
+                        "required": [
+                            "bookWeight"
+                        ]
+                    },
+                    "category": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "required": [
+                                    "id"
+                                ]
+                            },
+                            "name": {
+                                "type": "string",
+                                "required": [
+                                    "id"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "category"
+                        ]
+                    },
+                    "genre": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "required": [
+                                    "id"
+                                ]
+                            },
+                            "name": {
+                                "type": "string",
+                                "required": [
+                                    "id"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "genre"
+                        ]
+                    },
+                    "seller": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "required": [
+                                    "id"
+                                ]
+                            },
+                            "name": {
+                                "type": "string",
+                                "required": [
+                                    "id"
+                                ]
+                            },
+                            "gender": {
+                                "enum": [
+                                    "Laki-laki",
+                                    "Perempuan"
+                                ],
+                                "required": [
+                                    "gender"
+                                ]
+                            },
+                            "dateOfBirth": {
+                                "type": "object",
+                                "properties": {
+                                    "date": {
+                                        "type": "integer",
+                                        "required": [
+                                            "date"
+                                        ]
+                                    },
+                                    "month": {
+                                        "type": "integer",
+                                        "required": [
+                                            "month"
+                                        ]
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "required": [
+                                            "year"
+                                        ]
+                                    }
+                                }
+                            },
+                            "email": {
+                                "type": "string",
+                                "required": [
+                                    "email"
+                                ]
+                            },
+                            "phoneNumber": {
+                                "type": "integer",
+                                "required": [
+                                    "phoneNumber"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "seller"
+                        ]
+                    },
+                    "images": {
+                        "type": "string",
+                        "required": [
+                            "images"
+                        ]
                     }
+                }
+            }
+        },
+        "examples": {
+            "response-product-if-product-filtered-by-category-horor": {
+                "description": "Response product by filtered category horor",
+                "value": {
+                    "took": 200,
+                    "status": "OK",
+                    "data": [
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        },
+                        {
+                            "id": "5690f0b6a7d9167650e9854792883039",
+                            "title": "The Shining",
+                            "rating": 3.4,
+                            "price": 150000,
+                            "reviews": 14000,
+                            "language": "Indonesia",
+                            "sendFrom": "Bogor",
+                            "description": "Pekerjaan baru Jack Torrance di Overlook Hotel adalah kesempatan sempurna untuk awal yang baru. Sebagai penjaga di luar musim di hotel tua atmosfer, dia akan memiliki banyak waktu untuk dihabiskan untuk berhubungan kembali dengan keluarganya dan mengerjakan tulisannya. Tetapi ketika cuaca musim dingin yang keras mulai masuk, lokasi yang indah terasa semakin terpencil... dan lebih menyeramkan. Dan satu-satunya yang memperhatikan kekuatan aneh dan mengerikan yang berkumpul di sekitar Overlook adalah Danny Torrance, seorang anak berusia lima tahun yang berbakat unik.",
+                            "sold": 2,
+                            "quantity": 100,
+                            "bookCondition": "Original",
+                            "bookWeight": {
+                                "numberWeight": 3.59,
+                                "unitWeight": "kg"
+                            },
+                            "category": {
+                                "id": "2a390e7ac0f16fe106014885a0c5dd73",
+                                "name": "Horor"
+                            },
+                            "genre": {
+                                "id": "01e64cb0a7902678956d45f23a48efbf",
+                                "name": "Horor"
+                            },
+                            "seller": {
+                                "id": "7fc0cb40759b498a7689bd54cd8173ab",
+                                "name": "Jusuf Irfan",
+                                "image": "389jnajse34JAL.png",
+                                "gender": "Laki-laki",
+                                "dateOfBirth": {
+                                    "date": 28,
+                                    "month": 2,
+                                    "year": 1999
+                                },
+                                "email": "JusufIrfan@gmail.com",
+                                "phoneNumber": "081678239273"
+                            },
+                            "images": [
+                                "lkAnajse34JAL.PNG",
+                                "mwBnajse34JAL.PNG",
+                                "rtCnajse34JAL.PNG",
+                                "hjDnajse34JAL.PNG",
+                                "weEnajse34JAL.PNG"
+                            ]
+                        }
+                    ],
+                    "dataLength": 10,
+                    "errors": null
                 }
             }
         }
